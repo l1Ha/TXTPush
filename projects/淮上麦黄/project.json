@@ -1,0 +1,29 @@
+{
+  "title": "淮上麦黄",
+  "genre": "通用",
+  "keywords": [
+    "淮滨",
+    "信阳",
+    "河南",
+    "农村",
+    "留守老人",
+    "土地流转",
+    "淮河",
+    "空心村"
+  ],
+  "premise": "淮河滩区最后一季麦子熟了，七十二岁的留守老人周德山必须在土地流转协议上签字，他要签下的不只是地，还有埋在自家地头的老伴。",
+  "target_chapters": 1,
+  "words_per_chapter": 5000,
+  "pov": "第三人称有限",
+  "tone": "冷峻、克制、有温度",
+  "audience": "大众读者",
+  "extra": "",
+  "asset_prefix": "HuaiShangMaiHuang",
+  "chapters_mode": "fixed",
+  "min_chapters": 5,
+  "max_chapters": 12,
+  "work_type": "short",
+  "kb_modules": [
+    "02-世界设定/03"
+  ]
+}

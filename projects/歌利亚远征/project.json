@@ -1,0 +1,28 @@
+{
+  "title": "歌利亚远征",
+  "genre": "通用",
+  "keywords": [
+    "徒步",
+    "环球",
+    "白令海峡",
+    "达连隘口",
+    "里海",
+    "签证",
+    "孤独",
+    "自然",
+    "归乡"
+  ],
+  "premise": "1998年11月1日，一个刚离婚、只剩500美元的英国男人从智利最南端出发，决定用两条腿走回英格兰的家。他叫这场远征歌利亚，原以为十二年，结果走了二十八年。",
+  "target_chapters": 28,
+  "words_per_chapter": 3500,
+  "pov": "第三人称有限",
+  "tone": "辽阔、冷静、克制，带诗意的颂歌",
+  "audience": "大众读者",
+  "extra": "",
+  "asset_prefix": "GoliathExpedition",
+  "chapters_mode": "fixed",
+  "min_chapters": 5,
+  "max_chapters": 12,
+  "work_type": "novel",
+  "kb_modules": []
+}

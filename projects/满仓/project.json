@@ -1,0 +1,31 @@
+{
+  "title": "满仓",
+  "genre": "通用",
+  "keywords": [
+    "淮滨",
+    "信阳",
+    "河南",
+    "农村",
+    "一生",
+    "土地",
+    "打工",
+    "留守",
+    "淮河",
+    "变迁"
+  ],
+  "premise": "一个叫满仓的人，生在淮河边，名字是饿怕了的爹起的，可他这一生，粮仓从没满过。他把一辈子种进土里，又看着土地把一代人一茬一茬地送走。",
+  "target_chapters": 1,
+  "words_per_chapter": 6000,
+  "pov": "第三人称有限",
+  "tone": "平静、朴素、克制，带泥土气",
+  "audience": "大众读者",
+  "extra": "",
+  "asset_prefix": "ManCang",
+  "chapters_mode": "fixed",
+  "min_chapters": 5,
+  "max_chapters": 12,
+  "work_type": "short",
+  "kb_modules": [
+    "02-世界设定/03"
+  ]
+}

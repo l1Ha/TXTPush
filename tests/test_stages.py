@@ -1,0 +1,170 @@
+"""Unit tests for pipeline/stages.py."""
+
+import os
+import sys
+import unittest
+
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "pipeline"))
+import stages
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+
+class TestStages(unittest.TestCase):
+    def test_outline_count_block_fixed(self):
+        auto, rule, act, last = stages.outline_count_block(
+            {"target_chapters": 6, "words_per_chapter": 2500})
+        self.assertFalse(auto)
+        self.assertIn("严格输出 6 章（不得多、不得少）", rule)
+        self.assertIn("直到第6章", last)
+        self.assertIn("三幕式", act)
+
+    def test_outline_count_block_auto(self):
+        auto, rule, act, last = stages.outline_count_block(
+            {"target_chapters": 8, "words_per_chapter": 2500, "chapters_mode": "auto",
+             "min_chapters": 5, "max_chapters": 12})
+        self.assertTrue(auto)
+        self.assertIn("章数由情节决定", rule)
+        self.assertIn("建议 5~12 章", rule)
+        self.assertNotIn("严格输出", rule)
+        self.assertIn("直到最后一章", last)
+        self.assertIn("按实际章数自行换算比例", act)
+
+    def test_end_marker_and_continuation_repeat_guard(self):
+        self.assertEqual(stages.find_end_marker("正文在这里结束。（全文完）"), "（全文完）")
+        self.assertEqual(stages.find_end_marker("正文还在继续。"), "")
+        before = ("他沿着河岸一直走到天黑才停下来。"
+                  "她把那盏灯留在窗台上没有关。"
+                  "远处传来一声很长的汽笛。")
+        self.assertTrue(stages.continuation_repeats(
+            before, "她把那盏灯留在窗台上没有关。然后她转身进屋。"))
+        self.assertFalse(stages.continuation_repeats(
+            before, "天亮了，街上有了第一班电车，卖早点的人推开了卷帘门。"))
+
+    def test_continuation_restart_guard(self):
+        head = "拐杖尖磨出的光斑在石板上滑了一下。晨雾裹着松脂味钻进鼻腔。无人机从山脊后飞来。"
+        chapter = head + "后面还有很长的正文，一直讲到天黑。" * 30
+        restart = head + "他签字。然后是漫长的直播。" * 20
+        self.assertTrue(stages.continuation_restarts(chapter, restart))
+        self.assertFalse(stages.continuation_restarts(
+            chapter, "他拄着拐杖走进院子，把门闩上，没再回头。"))
+
+    def test_machine_precheck_flags_similar_chapters_and_bad_end(self):
+        import tempfile
+        same = "他沿着河岸一直走，风从背后吹来，水面上浮着一层薄雾。" * 30
+        other = "她把旧车票翻来覆去地看，车票边角已经卷了，像一片干枯的叶子。" * 30
+        with tempfile.TemporaryDirectory() as tmpdir:
+            files = []
+            for i, body in enumerate((same, same.replace("薄雾", "雾气") + "\n\n（全文完）\n\n" + other),
+                                     start=1):
+                p = os.path.join(tmpdir, "chapter_%03d.md" % i)
+                with open(p, "w", encoding="utf-8") as f:
+                    f.write("# 第%d章 测试\n\n%s\n" % (i, body))
+                files.append(p)
+            report, problems = stages.machine_precheck(files, 2000)
+        self.assertIn("跨章高度相似", report)
+        self.assertIn("收尾异常", report)
+        self.assertGreaterEqual(problems, 2)
+
+    def test_revision_keeps_length_guard(self):
+        # 原稿已达标时，修订稿被压缩 10% 以上 → 拒绝（保留原稿）
+        self.assertFalse(stages.revision_keeps_length(5700, 2446, 6500))
+        self.assertFalse(stages.revision_keeps_length(5747, 4666, 6500))
+        # 正常修订（幅度小）→ 放行
+        self.assertTrue(stages.revision_keeps_length(5700, 5400, 6500))
+        # 原稿本就不足 85% → 放行（后续由字数闸门补足）
+        self.assertTrue(stages.revision_keeps_length(3000, 1200, 6500))
+
+    def test_short_form_rules_and_single_piece_plan(self):
+        cfg = {"work_type": "short", "words_per_chapter": 6000}
+        self.assertEqual(stages.work_form(cfg), "short")
+        self.assertEqual(stages.work_form({}), "novel")
+        rules = stages.quality_rules(6000, "short")
+        self.assertIn("单一效果", rules)
+        self.assertIn("开场三十字内落地", rules)
+        self.assertIn("结尾不解释", rules)
+        self.assertNotIn("跨章唯一", rules)          # 短篇不适用长篇红线
+        auto, count_rule, act_rule, last = stages.outline_count_block(cfg)
+        self.assertTrue(auto)
+        self.assertIn("短篇单篇", count_rule)
+        self.assertIn("只输出**一个**章节块", count_rule)
+        self.assertIn("只有一个转折", act_rule)
+        self.assertIn("只输出第1章一个块", last)
+
+    def test_short_form_knowledge_modules(self):
+        import kb
+        self.assertIn("09-短篇写作", kb.stage_modules("draft", "short"))
+        self.assertIn("09-短篇写作", kb.stage_modules("concept", "short"))
+        self.assertNotIn("09-短篇写作", kb.stage_modules("draft", "novel"))
+        self.assertIn("08-质量规则", kb.stage_modules("concept", "short"))
+
+    def test_genre_knowledge_module(self):
+        import kb
+        mods = kb.stage_modules("draft", "novel", genre="悬疑推理")
+        self.assertIn("10-题材模块/悬疑推理", mods)
+        self.assertNotIn("10-题材模块/悬疑推理", kb.stage_modules("draft", "novel"))
+        self.assertNotIn("10-题材模块/通用", kb.stage_modules("draft", "novel", genre="通用"))
+
+    def test_quality_rules_includes_reality_mapping(self):
+        # 「镜面原则：映射当下」必须作为红线注入写作/修订提示词
+        rules = stages.quality_rules(2500)
+        self.assertIn("映射当下", rules)
+        self.assertIn("现实", rules)
+        self.assertIn("2500", rules)  # 仍带字数参数
+
+    def test_mapping_rules_injected_into_setting_stages(self):
+        # 概念与世界观阶段必须能拿到质量规则（含映射原则），否则开书时不会产出映射表
+        import kb
+        for stage_name in ("concept", "world", "draft", "review", "revise", "continuity"):
+            mods = kb.STAGE_MODULES[stage_name]
+            self.assertTrue(any(m.startswith("08") for m in mods), stage_name)
+
+    def test_word_count(self):
+        text = "未来 科技 探索\nHello World!"
+        # 中文6字 + 英文与标点11字 = 17
+        self.assertEqual(stages.word_count(text), 17)
+
+    def test_chapter_no(self):
+        self.assertEqual(stages.chapter_no("chapter_007.md"), 7)
+        self.assertEqual(stages.chapter_no("/path/to/chapter_012_审校.md"), 12)
+
+    def test_clip(self):
+        t = "A" * 500
+        clipped = stages.clip(t, 100)
+        self.assertIn("…（中间略）…", clipped)
+        self.assertLessEqual(len(clipped), 120)
+
+    def test_parse_outline(self):
+        sample = """# 全书大纲
+## 故事线概览
+简介正文
+
+## 第1章 记忆之渊
+- 场景：霓虹地下城
+- 核心冲突：记忆被盗
+
+## 第2章 暗网追凶
+- 场景：浮空艇
+- 核心冲突：遭遇伏击
+"""
+        parsed = stages.parse_outline(sample)
+        self.assertEqual(len(parsed), 2)
+        self.assertEqual(parsed[0][0], 1)
+        self.assertEqual(parsed[0][1], "记忆之渊")
+        self.assertEqual(parsed[1][0], 2)
+        self.assertEqual(parsed[1][1], "暗网追凶")
+
+    def test_project_state_and_usage(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as tmpdir:
+            proj = stages.Project(tmpdir, "mock_novel")
+            proj.save_config({"title": "Mock Novel"})
+            proj.save_state({"stages": {}})
+            proj.track_usage("test_stage", {"prompt_tokens": 100, "completion_tokens": 50, "total_tokens": 150})
+            st = proj.state()
+            self.assertIn("token_usage", st)
+            self.assertEqual(st["token_usage"]["total_tokens"], 150)
+
+
+if __name__ == "__main__":
+    unittest.main()

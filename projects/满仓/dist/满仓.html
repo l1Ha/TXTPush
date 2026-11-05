@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>满仓 - TxtPush 在线阅读</title>
+<style>
+:root {
+    --bg-primary: #f8fafc;
+    --bg-card: #ffffff;
+    --text-primary: #1e293b;
+    --text-secondary: #64748b;
+    --border-color: #e2e8f0;
+    --accent: #2563eb;
+    --accent-hover: #1d4ed8;
+    --sidebar-bg: #f1f5f9;
+}
+[data-theme="dark"] {
+    --bg-primary: #0f172a;
+    --bg-card: #1e293b;
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --border-color: #334155;
+    --accent: #38bdf8;
+    --accent-hover: #0ea5e9;
+    --sidebar-bg: #111827;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.85;
+    transition: background-color 0.2s, color 0.2s;
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+}
+#sidebar {
+    width: 320px;
+    background: var(--sidebar-bg);
+    border-right: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    flex-shrink: 0;
+}
+.sidebar-header {
+    padding: 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+.sidebar-header h2 {
+    font-size: 1.15em;
+    font-weight: 700;
+    margin-bottom: 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.sidebar-meta {
+    font-size: 0.85em;
+    color: var(--text-secondary);
+}
+.chapter-list {
+    overflow-y: auto;
+    flex: 1;
+    list-style: none;
+}
+.chapter-item {
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--border-color);
+    cursor: pointer;
+    font-size: 0.95em;
+    transition: background 0.15s;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.chapter-item:hover {
+    background: rgba(0,0,0,0.04);
+}
+.chapter-item.active {
+    background: var(--accent);
+    color: #ffffff;
+    font-weight: 600;
+}
+.chapter-item .ch-words {
+    font-size: 0.8em;
+    opacity: 0.75;
+}
+#main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+.topbar {
+    padding: 12px 24px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--bg-card);
+}
+.controls button {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 6px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.88em;
+    margin-left: 8px;
+    transition: 0.15s;
+}
+.controls button:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+#content-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: 40px 10%;
+    display: flex;
+    justify-content: center;
+}
+.content-wrapper {
+    max-width: 780px;
+    width: 100%;
+}
+.article-header {
+    text-align: center;
+    margin-bottom: 36px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+.article-header h1 {
+    font-size: 1.85em;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+.article-meta {
+    font-size: 0.9em;
+    color: var(--text-secondary);
+}
+.article-body p {
+    text-indent: 2em;
+    margin-bottom: 1.4em;
+    font-size: 1.1em;
+    text-align: justify;
+}
+.intro-box {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-left: 5px solid var(--accent);
+    padding: 24px;
+    border-radius: 8px;
+    margin-bottom: 40px;
+}
+.nav-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 50px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-color);
+}
+.nav-btn {
+    padding: 10px 20px;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    background: var(--bg-card);
+    color: var(--text-primary);
+    cursor: pointer;
+    font-size: 0.95em;
+}
+.nav-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+@media (max-width: 768px) {
+    body { flex-direction: column; }
+    #sidebar { width: 100%; height: 200px; }
+    #content-container { padding: 20px 5%; }
+}
+</style>
+</head>
+<body>
+<div id="sidebar">
+    <div class="sidebar-header">
+        <h2 title="满仓">满仓</h2>
+        <div class="sidebar-meta">作者：TxtPush AI Writer · 1 章 / 5121 字</div>
+    </div>
+    <ul class="chapter-list" id="chapterList"></ul>
+</div>
+<div id="main">
+    <div class="topbar">
+        <span id="currentChLabel">扉页与作品简介</span>
+        <div class="controls">
+            <button onclick="changeFontSize(-1)">A-</button>
+            <button onclick="changeFontSize(1)">A+</button>
+            <button onclick="toggleTheme()" id="themeBtn">🌓 切换暗色</button>
+        </div>
+    </div>
+    <div id="content-container">
+        <div class="content-wrapper" id="articleWrapper"></div>
+    </div>
+</div>
+
+<script>
+const book = {"title": "满仓", "author": "TxtPush AI Writer", "description": "一个叫满仓的人，生在淮河边，名字是饿怕了的爹起的，可他这一生，粮仓从没满过。他把一辈子种进土里，又看着土地把一代人一茬一茬地送走。", "total_words": 5121, "chapters": [{"index": 1, "title": "满仓", "words": 5121, "paragraphs": ["一九六二年，淮河发过一场大水。", "水退的冬天，陈家添了个男娃。爹给他取名“满仓”。前两年饿怕了，庄稼人这辈子最大的念想，就是粮仓能满。名字一叫，就是一辈子。可满仓这一生，仓里从来没真正满过。", "满仓生在淮滨县，淮河边上。淮滨的地，是淮河一年一年淤出来的，黑，肥，踩上去陷半个脚。可淮河脾气不好，说翻脸就翻脸。种这里的地，一半看人，一半看天。", "满仓会走路，就会光脚。夏天，他给队里放牛，牛在河滩上啃草，他仰面躺在草里看云；冬天，他跟娘下地拾麦穗，拾一天，装满一小篮，够熬一锅稀的。他记得娘的手，裂着口子，指甲缝里全是泥，往他嘴里塞一颗炒黄豆，说：吃了，长个。", "那时候吃大锅饭。队里敲钟上工，敲钟放工。满仓排行老三，上头两个姐姐，下头还有个弟弟。孩子多，粮食少。他的碗里，稀的多，干的少。", "有一年开春，青黄不接，家里断了粮。娘把榆树皮磨成面，掺进苞谷面里，蒸出来的馍发黑、发涩，咽下去刮嗓子。满仓蹲在门槛上，一口一口往下咽，眼泪在眼眶里转，不敢让它掉——掉了，娘会更难受。", "后来一辈子，满仓不吃榆钱。有人问他为啥，他说：一闻见那味儿，肚子就发慌。", "满仓念过书。村小的土坯房，一条长凳坐三个人，先生用树枝在地上写字。他念到小学四年级，认得一些字，会写自己的名字。可地里的活一多，他就坐不住了。", "十来岁上，他就跟着大人上工了：割草，喂牲口，拾粪，挣工分。一个整劳力一天挣十分，他挣三分。三分也是分，到年底，能换回半袋粮。他把那把工分本收得比命还紧。", "他有一帮玩伴：二柱、小改、瘸腿的三。夏天，几个孩子偷偷下河摸鱼，娘不许，说河水会吃人。有一回二柱真掉进深水里，是满仓把他拽上来的，两人回家，各挨了一顿打。满仓趴在炕上，屁股火辣辣的，心里却有点得意——他觉得自己是个能救人的大人了。", "生产队的冬天最难熬。队里分的柴不够烧，满仓和姐姐就去河滩上搂枯草，背回来一大捆，压得人直不起腰。晚上，一家人挤在一铺炕上，脚对脚取暖。有一年冬天特别冷，井都冻住了，娘用开水一点点化开，才打到水。", "那时候最热闹的，是放露天电影。一两个月来一回，晒场上支起一块白布，全村人都搬着凳子去占地方。满仓记得看《地道战》，记得满场的笑声和咳嗽声，记得散场以后，他跟在他爹身后往家走，天上的星星又密又亮。他问爹：电影里的人，咋不种地。爹说：人家有别的活法。", "满仓没往别处想。他觉得，种地就挺好。土里有吃的，土里能长出粮食，长出一家人的日子。", "满仓那时候最大的愿望，就是能吃饱，能穿上一双不露脚趾的鞋。有一年过年，娘给他做了一双新棉鞋，蓝布的，鞋底是娘一针一针纳的。他舍不得穿，一直留到开春。", "分田到户那年，满仓十一岁。", "那天夜里，队部的灯亮到半夜。大人们挤在屋里，念名字，抓阄。满仓挤在门外，踮着脚往里看。爹出来的时候，脸是红的，一进门就喊：咱家有地了，自个儿的地！", "娘不信，问了三遍。爹说：真的，分了八亩，东洼那块最肥的，也抓着了。", "那一年，是满仓记忆里头一回，家里能吃饱。新麦下来，磨了面，蒸了白馍。他一气吃了三个，撑得夜里睡不着，在院里来回走，看月亮。", "有了地，人就被拴在土上了。满仓跟着爹下地，学扶犁，学撒种，学看天。爹教他：麦要赶在霜前种，豆要抢在雨前；云往哪边走，明天就有雨。满仓学得实。他想着，自己这辈子，大概就是和这几亩地，一起过完。", "那几年，村里家家都像上了发条，天不亮就下地，黑了才回。谁家收麦，四邻都来帮忙；谁家盖房，男人都去搭手。满仓十三四岁那年，爹病了一场，他就顶了半个劳力。第一次独自扶犁，犁歪了，牛也恼了，他自己急出一头汗。爹在埂上看着，没骂他，只说：慢点，地不撵你。", "十几岁上，他跟着爹去交公粮。一车一车拉到粮站，排一天队。粮要过风车，验水分：多一粒嫌潮，少一粒嫌干。有一年，粮站把他的麦子压了分量，爹蹲在墙根抽了一袋烟，末了一句话没说，把粮交了。回家的路上，爹说：种地的，胳膊拧不过秤砣。", "满仓把这句话记了一辈子。", "淮河又发过水。满仓十八岁那年。", "雨下了七天七夜，河水一天涨一尺。水是半夜进的屋，娘把他推醒，他抱着被子往外跑，脚底的水已经到膝盖。全队的人往大堤上撤，牛、猪、鸡，一起往上赶。满仓站在堤上，看自家的屋淹了一半，麦垛漂在水上，像一座座孤岛。", "那水泡了半个月才退。地里的秋庄稼，全烂了。这一年，又是靠救济过的冬。", "水退了，日子还得过。满仓跟着爹，在淤泥里重新翻地、下种。爹说：河要发水，拦不住；可人不能跟着躺下。地翻一遍，就又是一年。", "满仓记住了。后来他这一生，凡是遇上塌下来的事，都是这一句：地翻一遍，就又是一年。", "满仓二十三岁那年，娶了秀。", "秀是隔村的，脸圆，手巧，会纳鞋底。娶亲花了四百块，加上三间新瓦房，家里借遍了亲戚。婚事办得简单，一挂鞭炮，两桌酒席。进门那天，秀穿着一身红，低着头，手指绞着衣角。满仓对她说：跟着我，苦。秀说：怕苦，就不嫁给你了。", "第二年，有了儿子，取名念祖——念着祖宗，也念着这片地。往后几年，秀又给他添了个闺女。", "那几年，是满仓一辈子最踏实的几年。地是自己的，粮是自己的，孩子在院里跑，猪在圈里哼哼。他把院墙加高了些，把房顶换了新瓦。他真觉得，这日子，要慢慢满起来了。", "秀把家里拾掇得利利索索。院里搭了葡萄架，墙根种了丝瓜。夏天，一家人坐在架下吃饭，蚊子在耳边嗡嗡，秀拿蒲扇给两个孩子赶。满仓想，这辈子，就这样了，挺好。", "可地里的钱，怎么算都不够。", "孩子要念书，要交学费；老人要吃药，要花钱。光靠种地，一年到头，手里剩不下几个。村里开始有人往外走，去南方，进工地，回来的时候，带一沓花花绿绿的票子，和一身城里的味儿。", "满仓三十二岁那年，第一次出门。", "他把地撂给秀，把两个娃撂给秀，把两个老人也撂给秀，自己跟着老乡，去了南方的工地。走那天，秀没哭，只说：在外头，别亏着嘴。满仓背着一个蛇皮袋，在村口回头看了一眼——秀牵着念祖，站在那儿，越站越小。", "他在城里搬砖、扛水泥、扎钢筋。日头底下，胳膊晒得脱皮；入了冬，手冻开口子，缠着胶布照旧干。他住工棚，几十个人挤一处，夜里打呼噜能掀房顶。他省，一天三顿，馍就咸菜，把票子一张张压平，到年根，揣进贴身的口袋。", "头一年回家过年，火车票买不到，他挤在绿皮车上，站了一天一夜，脚肿得像发面馍。到县城，搭拖拉机到乡里，再走八里路。进村的时候，天黑了，他看见自家屋里亮着灯，那点昏黄的光，让他鼻子一酸。", "工地上有个老乡叫老周，比他大十岁，教他砌墙，也教他保命。老周说：咱这活，吃的是青春饭，干到四十，就没人要了。满仓不信。后来他四十了，信了。", "最让人寒心的，是讨薪。有一年，工头卷了钱跑了，几十号人白干半年。满仓和工友们在工地守了三天，睡在水泥袋上。最后，每人只拿到一半。他把那一半攥在手里，坐在马路牙子上，抽了一根烟——他不抽烟，那是老周塞给他的。他抽完，把烟头摁灭，说了两个字：回家。", "他一年回一次。回来那天，两个孩子都不太认得他。念祖往秀身后躲，闺女咧着嘴哭。秀把他行李翻个底朝天，找出那沓钱，数了又数，数完，眼圈红了。", "后来，满仓去过很多地方。南方的厂子，北方的矿，省城的楼。他这半辈子，给别人盖了数不清的房子；自己家那三间瓦房，还是老样子。", "有一回，他在工地上从脚手架上摔下来，摔折了两根肋骨。工头给他结了医药费，打发他走。他躺在床上，想家，想秀，想地里那茬麦子该收了。伤还没好利索，他又进了另一个工地。他不敢停。一停，家里就断了钱。", "他这一走，就是十几年。念祖从上小学到初中，见他，掰着指头都数得清。秀一个人，上要伺候两个老人，下要拉扯两个孩子，地里的活、家里的事，全压在她一个人身上。满仓在电话里问她累不累，她总说：习惯了。可他听得出，她的声音，一年比一年沉。", "有一年，闺女不怎么叫他了。电话里，从“爸”，叫成了“你”。他心里咯噔一下。过年回家，闺女躲着不肯见他。后来，门缝里递出一张纸，上面画着四个人，中间那个是空的。秀告诉他，闺女说，那个空的，是你。", "满仓把那张纸叠好，揣进贴身的口袋，和钱放在一处。揣了半辈子。", "那些年，秀一个人，把地里、家里都撑了起来。麦收的时候，别人家男人多，她一个人割一亩，割到天黑，腰直不起来，就趴在麦茬上歇一会儿。满仓回来，看见她手上的口子，比娘当年的还深。", "先是爹走了。", "那年麦收，爹在地里干活，一头栽下去，再没起来。满仓从工地赶回来，爹已经入了殓。他在灵前坐了一夜，一句话说不出。他想起小时候，爹蹲在墙根抽旱烟的样子；想起爹教他看天、扶犁的样子；想起爹那句“胳膊拧不过秤砣”。他把爹葬在西坡那片林子里，坟头朝着自家的地。", "后是娘走了。娘走得慢，拖了几年，眼睛先花了，后来人也认不清了。她最后认得的人，还是满仓。她拉着他的手，说：满仓，地……别撂了。满仓说：不撂。娘就走了。", "满仓把娘葬在爹的旁边。他跪在新坟前，磕了三个头。他没哭。他这一辈子，眼泪早就哭干了，或者，早就学会了，往里咽。", "念祖长大了。念书不成，十七八岁，也出去打工。", "满仓原想着，等娃挣了钱，家里就能松口气。可轮到念祖要说亲，新的愁又来了。如今的彩礼，不是他娶秀那会儿的四百块了。女方要县城有房，要车，要摆酒，动辄十几万。", "满仓把攒了一辈子的钱，掏了个底朝天；又厚着脸皮，跟亲戚借了一圈。他把自己那点养老的钱，也搭了进去。", "交钱前一夜，他和秀把钱包在一块旧布里，就着灯，数了三遍。秀说：够不够。满仓说：够。其实还差一截。他没说。他又去找了一个远房表哥，把最后那点口子补上。", "念祖在县城买了房，娶了媳妇，摆了几十桌。满仓坐在主桌上，看着儿子敬酒，笑着，可心里空落落的。他忽然想起当年，他爹给他娶秀，也是这么东拼西凑。一代一代，原来是拿一样的姿势，把腰弯下去的。", "后来，孙子出生了。满仓给孙子包了个红包，是他在工地上多干了半个月攒下的。", "秀的身子，是一年不如一年。", "先是胃，后是别的地方。秀不当回事，总说不碍事，歇歇就好。满仓带她去县医院，去市里，钱一天一天往外淌。秀心疼，说不治了，留着给念祖。满仓头一回跟她发了火：你说啥呢。", "可治不好了。", "念祖回来过一趟，在床前跪了一夜，没待两天，又走了——厂里催，孩子要上学。屋子里又剩满仓一个人，守着秀。", "秀走的那天，是个麦黄的季节。", "她拉着满仓的手，气短，一个字一个字往外挪：满仓，我想……回咱地头看看。", "满仓找出那辆旧轮椅，把她推出去，推到地边。麦子黄了，风一吹，一层一层地倒，沙沙地响。秀看了很久，说：真好。", "第二天，人就没了。", "满仓把秀葬在爹娘坟的旁边，朝着自家的地。他又一次，跪下去，磕头，一下，一下，慢慢的。", "这一回，他哭了。", "如今，满仓七十多了。", "腰弯了，眼也花了，手也抖。他不下地干活了，就每天沿着村道走一圈，走到地头，站着，看远处的淮河。淮河还在，水还是黄的，一年一年地淌。村里白天没什么人，锁着的门，一家比一家多。", "地，也没那么多人种了。他把那几亩转给了合作社，一年收点租金。种得动的时候种一点，种不动，就撂着。", "签字那天，合作社的人量了地，让他按手印。满仓按完，在地头站了半晌。他想起爹分地那晚通红的脸，想起自己十三岁第一次独自扶犁，犁歪了，牛也恼了。他什么也没说，回了家，把那把用了几十年的镰刀，解下来，挂到了墙上。那镰刀，爹握过，他握过，如今挂在那儿，一天比一天凉。", "他自己做饭，一碗稀的，一个馍。收音机里唱戏，他听着听着，睡着了。醒来，天黑了，屋里就他一个人。他不开灯，在暗里坐一会儿，才起来拉灯绳。", "村里比他大的老人，一年走一个。前些天，二柱走了——就是小时候和他一块儿下河摸鱼的那个。满仓去送，站在坟前，想起那年二柱掉进深水，是他拽上来的。回来那天，他在自家院里坐了很久，一按膝盖，一个坑，半天不起来。", "他身上也开始有病。手抖，腰疼，去乡里的卫生所拿药，新农合能给报一点。大夫让他去县里查查，他不去。他说：查出来，又能咋。", "念祖劝他进城。他不去。他说：去了城里，人不认得我，地也不认得我，我站那儿算啥。", "有一年麦收，念祖带着孙子回来。", "小孙子在满仓的地里跑，问：爷爷，这是啥？", "满仓说：麦子。", "孙子又问：麦子能吃吗？", "满仓蹲下来，掐了一穗，放进孙子手心：能。这是咱家的。", "孙子在手心里搓开麦穗，吹掉麦壳，把几粒青麦塞进嘴里，皱了皱眉，又嚼了嚼，笑了。", "满仓看着孙子，忽然想起很多年前，娘往他嘴里塞炒黄豆的样子。", "他这一辈子，名字叫满仓，仓里却没满过。", "可他又觉得，好像也没白活。这片地上的麦子，收了一茬又一茬。从他爹，到他，到他儿子，再到眼下这个咂嘴的娃。人一茬一茬地走，麦一茬一茬地长。麦子认得土，土认得人。", "太阳快落山了。满仓站起来，拍了拍膝盖上的土，慢慢地往家走。", "远处的淮河，白白的一条，一动不动。风从滩上过来，带着麦子的味。"]}]};
+const L = {"cover_label": "扉页与作品简介", "unit": "字", "by": "作者：", "meta_sep": " | 全书约 ", "intro_title": "作品概念与梗概", "prev": "← 上一章", "next": "下一章 →", "start": "开始阅读第一章 →", "ch_prefix": "第 ", "ch_mid": " 章 | ", "theme_dark": "☀️ 亮色模式", "theme_light": "🌓 暗色模式"};
+let currentIndex = -1; // -1 = title page / synopsis
+let fontSize = 17;
+
+function renderSidebar() {
+    const list = document.getElementById("chapterList");
+    list.innerHTML = `<li class="chapter-item ${currentIndex === -1 ? 'active' : ''}" onclick="goToChapter(-1)">
+        <span>📖 ${L.cover_label}</span>
+    </li>`;
+    book.chapters.forEach((ch, idx) => {
+        const li = document.createElement("li");
+        li.className = "chapter-item" + (currentIndex === idx ? " active" : "");
+        li.innerHTML = `<span>${ch.title}</span><span class="ch-words">${ch.words}${L.unit}</span>`;
+        li.onclick = () => goToChapter(idx);
+        list.appendChild(li);
+    });
+}
+
+function renderContent() {
+    const wrapper = document.getElementById("articleWrapper");
+    const label = document.getElementById("currentChLabel");
+    if (currentIndex === -1) {
+        label.innerText = L.cover_label;
+        wrapper.innerHTML = `
+            <div class="article-header">
+                <h1>${book.title}</h1>
+                <div class="article-meta">${L.by}${book.author}${L.meta_sep}${book.total_words.toLocaleString()}${L.unit}</div>
+            </div>
+            <div class="intro-box">
+                <h3 style="margin-bottom:12px;color:var(--accent);">${L.intro_title}</h3>
+                <div style="white-space: pre-wrap; line-height:1.75;">${book.description}</div>
+            </div>
+            <div class="nav-buttons">
+                <button class="nav-btn" disabled>${L.prev}</button>
+                <button class="nav-btn" onclick="goToChapter(0)">${L.start}</button>
+            </div>
+        `;
+    } else {
+        const ch = book.chapters[currentIndex];
+        label.innerText = ch.title;
+        const pTags = ch.paragraphs.map(p => `<p style="font-size: ${fontSize}px;">${p}</p>`).join("");
+        wrapper.innerHTML = `
+            <div class="article-header">
+                <h1>${ch.title}</h1>
+                <div class="article-meta">${L.ch_prefix}${ch.index}${L.ch_mid}${ch.words}${L.unit}</div>
+            </div>
+            <div class="article-body">
+                ${pTags}
+            </div>
+            <div class="nav-buttons">
+                <button class="nav-btn" onclick="goToChapter(currentIndex - 1)">${L.prev}</button>
+                <button class="nav-btn" onclick="goToChapter(currentIndex + 1)" ${currentIndex >= book.chapters.length - 1 ? 'disabled' : ''}>${L.next}</button>
+            </div>
+        `;
+    }
+    document.getElementById("content-container").scrollTop = 0;
+}
+
+function goToChapter(idx) {
+    if (idx < -1 || idx >= book.chapters.length) return;
+    currentIndex = idx;
+    renderSidebar();
+    renderContent();
+}
+
+function toggleTheme() {
+    const current = document.documentElement.getAttribute("data-theme");
+    const next = current === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", next);
+    document.getElementById("themeBtn").innerText = next === "dark" ? L.theme_dark : L.theme_light;
+}
+
+function changeFontSize(delta) {
+    fontSize = Math.max(14, Math.min(26, fontSize + delta));
+    const paras = document.querySelectorAll(".article-body p");
+    paras.forEach(p => p.style.fontSize = fontSize + "px");
+}
+
+renderSidebar();
+renderContent();
+</script>
+</body>
+</html>
