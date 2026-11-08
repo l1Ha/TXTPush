@@ -1047,6 +1047,9 @@ def stage_continuity(proj, cfg, api, only=None, force=False):
 def stage_assemble(proj: Project, cfg: Dict[str, Any], api: Optional[Dict[str, Any]] = None, **_kw: Any) -> str:
     concept = clean(read(proj.f_concept()))
     concept = re.sub(r"^#[^\n]*\n", "", concept).strip()  # 去掉概念稿标题，避免混入成书
+    synopsis_path = proj.path("00-简介.md")
+    synopsis = (clean(read(synopsis_path)).strip()
+                if os.path.exists(synopsis_path) else clip(concept, 600))
     files = proj.list_chapters()
     if not files:
         raise RuntimeError("没有章节文件，无法汇编。")
@@ -1059,8 +1062,8 @@ def stage_assemble(proj: Project, cfg: Dict[str, Any], api: Optional[Dict[str, A
              f"words: {chapter_words}",
              "---", ""]
     parts.append(f"# {title}\n")
-    if concept:
-        parts.append(f"## 简介\n\n{clip(concept, 600)}\n")
+    if synopsis:
+        parts.append(f"## 简介\n\n{synopsis}\n")
     for p in files:
         body = clean(read(p)).strip()
         if form == "short":  # 短篇单篇：去掉「# 第1章 …」行，正文即全篇

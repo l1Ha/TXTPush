@@ -1,0 +1,28 @@
+{
+  "title": "冬小麦",
+  "genre": "通用",
+  "keywords": [
+    "豫南",
+    "农村",
+    "高考",
+    "考研",
+    "博士",
+    "第一学历",
+    "非升即走",
+    "抑郁",
+    "麦子"
+  ],
+  "premise": "一个豫南农村的孩子，从村小一路读到博士，研究的是让麦子在旱年里活下来的学问；等他终于读完，才发现这块地上已经没有他的位置。",
+  "target_chapters": 14,
+  "words_per_chapter": 2200,
+  "pov": "第三人称有限",
+  "tone": "平静、克制、朴素，白描，短句",
+  "audience": "大众读者",
+  "extra": "",
+  "asset_prefix": "DongXiaoMai",
+  "chapters_mode": "fixed",
+  "min_chapters": 5,
+  "max_chapters": 12,
+  "work_type": "novel",
+  "kb_modules": []
+}
