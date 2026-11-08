@@ -1,0 +1,27 @@
+{
+  "title": "女字",
+  "genre": "通用",
+  "keywords": [
+    "冷门绝学",
+    "女书",
+    "女性文字",
+    "非遗",
+    "方言",
+    "乡村",
+    "记忆",
+    "代际"
+  ],
+  "premise": "一个会写女人专属古文字的老太太，被一支「冷门绝学」课题组来「抢救」；她只想把最后一行字，写给一个早已不在的人。",
+  "target_chapters": 1,
+  "words_per_chapter": 4000,
+  "pov": "第三人称有限",
+  "tone": "平静、朴素、克制，带一点苍凉",
+  "audience": "大众读者",
+  "extra": "",
+  "asset_prefix": "NvZi",
+  "chapters_mode": "fixed",
+  "min_chapters": 5,
+  "max_chapters": 12,
+  "work_type": "short",
+  "kb_modules": []
+}

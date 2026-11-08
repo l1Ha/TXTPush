@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>女字 - TxtPush 在线阅读</title>
+<style>
+:root {
+    --bg-primary: #f8fafc;
+    --bg-card: #ffffff;
+    --text-primary: #1e293b;
+    --text-secondary: #64748b;
+    --border-color: #e2e8f0;
+    --accent: #2563eb;
+    --accent-hover: #1d4ed8;
+    --sidebar-bg: #f1f5f9;
+}
+[data-theme="dark"] {
+    --bg-primary: #0f172a;
+    --bg-card: #1e293b;
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --border-color: #334155;
+    --accent: #38bdf8;
+    --accent-hover: #0ea5e9;
+    --sidebar-bg: #111827;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.85;
+    transition: background-color 0.2s, color 0.2s;
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+}
+#sidebar {
+    width: 320px;
+    background: var(--sidebar-bg);
+    border-right: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    flex-shrink: 0;
+}
+.sidebar-header {
+    padding: 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+.sidebar-header h2 {
+    font-size: 1.15em;
+    font-weight: 700;
+    margin-bottom: 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.sidebar-meta {
+    font-size: 0.85em;
+    color: var(--text-secondary);
+}
+.chapter-list {
+    overflow-y: auto;
+    flex: 1;
+    list-style: none;
+}
+.chapter-item {
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--border-color);
+    cursor: pointer;
+    font-size: 0.95em;
+    transition: background 0.15s;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.chapter-item:hover {
+    background: rgba(0,0,0,0.04);
+}
+.chapter-item.active {
+    background: var(--accent);
+    color: #ffffff;
+    font-weight: 600;
+}
+.chapter-item .ch-words {
+    font-size: 0.8em;
+    opacity: 0.75;
+}
+#main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+.topbar {
+    padding: 12px 24px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--bg-card);
+}
+.controls button {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 6px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.88em;
+    margin-left: 8px;
+    transition: 0.15s;
+}
+.controls button:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+#content-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: 40px 10%;
+    display: flex;
+    justify-content: center;
+}
+.content-wrapper {
+    max-width: 780px;
+    width: 100%;
+}
+.article-header {
+    text-align: center;
+    margin-bottom: 36px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+.article-header h1 {
+    font-size: 1.85em;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+.article-meta {
+    font-size: 0.9em;
+    color: var(--text-secondary);
+}
+.article-body p {
+    text-indent: 2em;
+    margin-bottom: 1.4em;
+    font-size: 1.1em;
+    text-align: justify;
+}
+.intro-box {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-left: 5px solid var(--accent);
+    padding: 24px;
+    border-radius: 8px;
+    margin-bottom: 40px;
+}
+.nav-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 50px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-color);
+}
+.nav-btn {
+    padding: 10px 20px;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    background: var(--bg-card);
+    color: var(--text-primary);
+    cursor: pointer;
+    font-size: 0.95em;
+}
+.nav-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+@media (max-width: 768px) {
+    body { flex-direction: column; }
+    #sidebar { width: 100%; height: 200px; }
+    #content-container { padding: 20px 5%; }
+}
+</style>
+</head>
+<body>
+<div id="sidebar">
+    <div class="sidebar-header">
+        <h2 title="女字">女字</h2>
+        <div class="sidebar-meta">作者：TxtPush AI Writer · 1 章 / 2318 字</div>
+    </div>
+    <ul class="chapter-list" id="chapterList"></ul>
+</div>
+<div id="main">
+    <div class="topbar">
+        <span id="currentChLabel">扉页与作品简介</span>
+        <div class="controls">
+            <button onclick="changeFontSize(-1)">A-</button>
+            <button onclick="changeFontSize(1)">A+</button>
+            <button onclick="toggleTheme()" id="themeBtn">🌓 切换暗色</button>
+        </div>
+    </div>
+    <div id="content-container">
+        <div class="content-wrapper" id="articleWrapper"></div>
+    </div>
+</div>
+
+<script>
+const book = {"title": "女字", "author": "TxtPush AI Writer", "description": "一个会写女人专属古文字的老太太，被一支「冷门绝学」课题组来「抢救」；她只想把最后一行字，写给一个早已不在的人。", "total_words": 2318, "chapters": [{"index": 1, "title": "女字", "words": 2318, "paragraphs": ["何婆婆的手，会写一种别人看不懂的字。", "那些字，细长，斜斜的，像一排排倒着长的豆芽。写在本子上，写在扇面上，写在蓝布手帕上。村里的年轻人不认得；村里上了年纪的男人，也不认得。认得的，只有女人——而且是一辈一辈，从娘手里传下来的女人。", "何婆婆七十八了。她是这一带，最后几个还认得这种字的人之一。", "用她自己的话说：这是“女人的字”，男人不配看，也不许看。", "她小时候，是跟娘学的。", "那时候，村里不兴女人念书。男娃去学堂，女娃在家学针线、学做饭。可到了晚上，娘会把她叫到灯下，拿一根细竹签，蘸一点墨，在她手心里写。", "一笔，一笔。", "娘写一个，念一个。念的是歌，唱的是苦：想娘的苦，嫁人的苦，生了孩子没养活的苦，男人在外头受了气、回来打人的苦。女人心里的话，说不出口，就绣在扇子上、手帕上，送给相好的姐妹看。", "何婆婆学得快。她记性好，写出来的字，比娘还端正。娘说：这字是咱们女人的命。男的字写在纸上、挂在堂屋里；咱们的字，写在帕子上、藏在枕头底下。他们看不懂，才安全。", "何婆婆有个相好的姐妹，叫阿莲。", "两个人拜过“老同”。在老一辈的说法里，老同，就是比亲姐妹还亲的人。什么话都说；说了还不算数，写下来才算数。", "她们互相写字，写了三十多年。阿莲嫁得远，两个人一年见不上一回，可字是通的。谁家添了娃，谁家的男人又动了手，谁夜里睡不着，心里憋着一口气——都写在帕子上，托人捎过去。阿莲的字比她的潦草，可每一笔她都认得；因为那字里写的，是两个人的日子。", "后来，阿莲先走了。", "走之前，阿莲把自己一辈子攒下的字，凑在盆里，一把火点了。火苗蹿起来，阿莲一边烧一边说：留着给谁看呢，没人看得懂了。烧了，干净。", "何婆婆没烧。她把自己写的那些，装进一个旧铁盒，压在了箱子底下。", "今年开春，村里来了几个人。", "他们是从省城来的，说是“冷门绝学”课题组的。他们打听到，这一带还有老人会写这种女人字，专门赶来了。他们要录音、录像、拍照，说要把这种字“抢救”下来，放进一个什么“数据库”，再申报“非遗”。", "领头的年轻人姓周，戴眼镜，说话客气，管何婆婆叫“奶奶”。", "小周说：奶奶，您这字，太宝贵了，是“绝学”。", "何婆婆问：绝学，是啥。", "小周说：就是……快没人会了的学问。", "何婆婆哦了一声，想了想，说：那我这字，快没人会了，不就是没人要了嘛。", "小周笑：奶奶，不是没人要，是快要失传了，我们才要来保护。", "何婆婆没接话。她低头看了看自己的手。那双手，写了大半辈子别人看不懂的字，如今皮松了，指节也肿了。", "课题组在村边的旅店住了下来，一趟一趟地来。", "他们让何婆婆写。写扇面，写手帕，写本子。摄像机对着她，录影灯亮着，热烘烘的。何婆婆的手抖，写得慢。小周在旁边催：奶奶，您写快点儿，我们下午还得赶下一个村。", "何婆婆停下笔，抬眼看了他一下。", "她说：写字，急不得。你们要的是快，我要的是这个字。", "小周不说话了。", "他们还给何婆婆录了音，让她唱那些老歌。何婆婆唱了两句，嗓子哑，停了。她说：这歌，是两个人对着唱的。我一个人唱，唱不出来。", "小周问：那另一个人呢。", "何婆婆说：早没了。", "有一回，小周请何婆婆写一段“示范文本”。", "他说：奶奶，您随便写点吉祥的、祝福的，图个喜庆，好上镜，好申报。", "何婆婆没动笔。", "她说：这字，不写吉祥话。", "小周问：为啥。", "何婆婆说：这字，是女人受了委屈、说不出口，才写的。写的是苦。你让我写吉祥的，我写不出来。", "小周笑：奶奶，现在都什么年代了，谁还讲究这个。您就写点高兴的，大家爱看。", "何婆婆把笔搁下了。那支笔，是她自己削的竹签，磨得光滑。她说：那你们找别人写吧。会写吉祥字的，多的是。", "那天，她没写。", "那天夜里，何婆婆一个人坐在灯下。", "屋里很静，只有灯泡“滋滋”地响。她从箱子底下，翻出那个旧铁盒，打开，里面是几张叠得整整齐齐的蓝布手帕，边角都发黄了。", "她挑出一张，铺在膝上。蘸了墨，一笔，一笔，慢慢地写。", "她写得很慢，比白天还慢。写一会儿，停一会儿，像在跟谁说话。", "她写的是自己这一辈子的苦：小时候挨的饿，阿莲远嫁的那天，她男人坐在堂屋抽烟、一句话不说的一整夜，夭折的那个孩子，还有那些她从来没对人说过的话。", "写满了，她把帕子晾在桌角，收好。", "那不是写给课题组的，也不是写给“数据库”的。那是写给一个人的。", "那个人，早就不在了。", "第二天，小周来要。", "何婆婆把那张帕子收进怀里，没给他看。她说：这是我自己的，不给你们。", "小周急了：奶奶，您得让我们录下来呀，不然就真失传了。", "何婆婆说：失传就失传吧。有些话，本来就是说给一个人听的。那个人不在了，这话，也就该跟着走了。", "小周愣住。他还想说，何婆婆摆了摆手。", "课题组到底还是走了，带走了录像、录音、照片，还有何婆婆这些年写下的几张帕子。他们说，要建一个“女字数据库”，让这份“绝学”，一代一代传下去。", "村里又安静了。", "春节，何婆婆的孙女从城里回来了。", "孙女叫小满，十九岁，在城里做美甲。她会刷手机，会讲普通话，会给自己画很好看的眉毛。她也是何婆婆的亲人里，最愿意跟奶奶说话的一个。", "听说了课题组的事，小满翻出奶奶那个旧铁盒，从里头摸出一张手帕。帕子上，密密麻麻，全是那种细长的字。", "她一个也不认得。", "她举着手帕，问奶奶：这写的啥。", "何婆婆坐在门槛上，晒太阳。她看了那张手帕很久，久到小满以为奶奶睡着了。", "才听她说：记不清喽。", "小满不信：奶奶，你会写，咋会记不清。", "何婆婆笑了，脸上的褶子挤到一处。她说：", "字我记得。写的是谁，我忘了。", "小满把那张手帕揣走了。", "回城以后，她把它压在枕头底下。有时候夜里醒来，她会摸出那张手帕，就着手机的光，一个字一个字地看。", "字，她一个也不认得。", "可她觉得，那里面有一种说不出来的东西。像是有一个走得很远很远的老人，隔着一层什么，在跟她说话。", "她听不见。", "可她舍不得放下。"]}]};
+const L = {"cover_label": "扉页与作品简介", "unit": "字", "by": "作者：", "meta_sep": " | 全书约 ", "intro_title": "作品概念与梗概", "prev": "← 上一章", "next": "下一章 →", "start": "开始阅读第一章 →", "ch_prefix": "第 ", "ch_mid": " 章 | ", "theme_dark": "☀️ 亮色模式", "theme_light": "🌓 暗色模式"};
+let currentIndex = -1; // -1 = title page / synopsis
+let fontSize = 17;
+
+function renderSidebar() {
+    const list = document.getElementById("chapterList");
+    list.innerHTML = `<li class="chapter-item ${currentIndex === -1 ? 'active' : ''}" onclick="goToChapter(-1)">
+        <span>📖 ${L.cover_label}</span>
+    </li>`;
+    book.chapters.forEach((ch, idx) => {
+        const li = document.createElement("li");
+        li.className = "chapter-item" + (currentIndex === idx ? " active" : "");
+        li.innerHTML = `<span>${ch.title}</span><span class="ch-words">${ch.words}${L.unit}</span>`;
+        li.onclick = () => goToChapter(idx);
+        list.appendChild(li);
+    });
+}
+
+function renderContent() {
+    const wrapper = document.getElementById("articleWrapper");
+    const label = document.getElementById("currentChLabel");
+    if (currentIndex === -1) {
+        label.innerText = L.cover_label;
+        wrapper.innerHTML = `
+            <div class="article-header">
+                <h1>${book.title}</h1>
+                <div class="article-meta">${L.by}${book.author}${L.meta_sep}${book.total_words.toLocaleString()}${L.unit}</div>
+            </div>
+            <div class="intro-box">
+                <h3 style="margin-bottom:12px;color:var(--accent);">${L.intro_title}</h3>
+                <div style="white-space: pre-wrap; line-height:1.75;">${book.description}</div>
+            </div>
+            <div class="nav-buttons">
+                <button class="nav-btn" disabled>${L.prev}</button>
+                <button class="nav-btn" onclick="goToChapter(0)">${L.start}</button>
+            </div>
+        `;
+    } else {
+        const ch = book.chapters[currentIndex];
+        label.innerText = ch.title;
+        const pTags = ch.paragraphs.map(p => `<p style="font-size: ${fontSize}px;">${p}</p>`).join("");
+        wrapper.innerHTML = `
+            <div class="article-header">
+                <h1>${ch.title}</h1>
+                <div class="article-meta">${L.ch_prefix}${ch.index}${L.ch_mid}${ch.words}${L.unit}</div>
+            </div>
+            <div class="article-body">
+                ${pTags}
+            </div>
+            <div class="nav-buttons">
+                <button class="nav-btn" onclick="goToChapter(currentIndex - 1)">${L.prev}</button>
+                <button class="nav-btn" onclick="goToChapter(currentIndex + 1)" ${currentIndex >= book.chapters.length - 1 ? 'disabled' : ''}>${L.next}</button>
+            </div>
+        `;
+    }
+    document.getElementById("content-container").scrollTop = 0;
+}
+
+function goToChapter(idx) {
+    if (idx < -1 || idx >= book.chapters.length) return;
+    currentIndex = idx;
+    renderSidebar();
+    renderContent();
+}
+
+function toggleTheme() {
+    const current = document.documentElement.getAttribute("data-theme");
+    const next = current === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", next);
+    document.getElementById("themeBtn").innerText = next === "dark" ? L.theme_dark : L.theme_light;
+}
+
+function changeFontSize(delta) {
+    fontSize = Math.max(14, Math.min(26, fontSize + delta));
+    const paras = document.querySelectorAll(".article-body p");
+    paras.forEach(p => p.style.fontSize = fontSize + "px");
+}
+
+renderSidebar();
+renderContent();
+</script>
+</body>
+</html>
