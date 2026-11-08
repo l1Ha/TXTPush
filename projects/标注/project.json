@@ -1,0 +1,27 @@
+{
+  "title": "标注",
+  "genre": "通用",
+  "keywords": [
+    "AI",
+    "数据中心",
+    "算力",
+    "数据标注",
+    "农业",
+    "乡村",
+    "算法",
+    "现实"
+  ],
+  "premise": "一个守着三亩果园的老把式，发现自己的经验被装进了山上的智算中心；当机器学会了他的一切，他和他的果树，都成了系统里的一个标签。",
+  "target_chapters": 1,
+  "words_per_chapter": 5000,
+  "pov": "第三人称有限",
+  "tone": "平静、克制、朴素",
+  "audience": "大众读者",
+  "extra": "",
+  "asset_prefix": "BiaoZhu",
+  "chapters_mode": "fixed",
+  "min_chapters": 5,
+  "max_chapters": 12,
+  "work_type": "short",
+  "kb_modules": []
+}
