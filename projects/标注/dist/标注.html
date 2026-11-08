@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>标注 - TxtPush 在线阅读</title>
+<style>
+:root {
+    --bg-primary: #f8fafc;
+    --bg-card: #ffffff;
+    --text-primary: #1e293b;
+    --text-secondary: #64748b;
+    --border-color: #e2e8f0;
+    --accent: #2563eb;
+    --accent-hover: #1d4ed8;
+    --sidebar-bg: #f1f5f9;
+}
+[data-theme="dark"] {
+    --bg-primary: #0f172a;
+    --bg-card: #1e293b;
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --border-color: #334155;
+    --accent: #38bdf8;
+    --accent-hover: #0ea5e9;
+    --sidebar-bg: #111827;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.85;
+    transition: background-color 0.2s, color 0.2s;
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+}
+#sidebar {
+    width: 320px;
+    background: var(--sidebar-bg);
+    border-right: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    flex-shrink: 0;
+}
+.sidebar-header {
+    padding: 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+.sidebar-header h2 {
+    font-size: 1.15em;
+    font-weight: 700;
+    margin-bottom: 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.sidebar-meta {
+    font-size: 0.85em;
+    color: var(--text-secondary);
+}
+.chapter-list {
+    overflow-y: auto;
+    flex: 1;
+    list-style: none;
+}
+.chapter-item {
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--border-color);
+    cursor: pointer;
+    font-size: 0.95em;
+    transition: background 0.15s;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.chapter-item:hover {
+    background: rgba(0,0,0,0.04);
+}
+.chapter-item.active {
+    background: var(--accent);
+    color: #ffffff;
+    font-weight: 600;
+}
+.chapter-item .ch-words {
+    font-size: 0.8em;
+    opacity: 0.75;
+}
+#main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+.topbar {
+    padding: 12px 24px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--bg-card);
+}
+.controls button {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 6px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.88em;
+    margin-left: 8px;
+    transition: 0.15s;
+}
+.controls button:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+#content-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: 40px 10%;
+    display: flex;
+    justify-content: center;
+}
+.content-wrapper {
+    max-width: 780px;
+    width: 100%;
+}
+.article-header {
+    text-align: center;
+    margin-bottom: 36px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+.article-header h1 {
+    font-size: 1.85em;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+.article-meta {
+    font-size: 0.9em;
+    color: var(--text-secondary);
+}
+.article-body p {
+    text-indent: 2em;
+    margin-bottom: 1.4em;
+    font-size: 1.1em;
+    text-align: justify;
+}
+.intro-box {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-left: 5px solid var(--accent);
+    padding: 24px;
+    border-radius: 8px;
+    margin-bottom: 40px;
+}
+.nav-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 50px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-color);
+}
+.nav-btn {
+    padding: 10px 20px;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    background: var(--bg-card);
+    color: var(--text-primary);
+    cursor: pointer;
+    font-size: 0.95em;
+}
+.nav-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+@media (max-width: 768px) {
+    body { flex-direction: column; }
+    #sidebar { width: 100%; height: 200px; }
+    #content-container { padding: 20px 5%; }
+}
+</style>
+</head>
+<body>
+<div id="sidebar">
+    <div class="sidebar-header">
+        <h2 title="标注">标注</h2>
+        <div class="sidebar-meta">作者：TxtPush AI Writer · 1 章 / 2890 字</div>
+    </div>
+    <ul class="chapter-list" id="chapterList"></ul>
+</div>
+<div id="main">
+    <div class="topbar">
+        <span id="currentChLabel">扉页与作品简介</span>
+        <div class="controls">
+            <button onclick="changeFontSize(-1)">A-</button>
+            <button onclick="changeFontSize(1)">A+</button>
+            <button onclick="toggleTheme()" id="themeBtn">🌓 切换暗色</button>
+        </div>
+    </div>
+    <div id="content-container">
+        <div class="content-wrapper" id="articleWrapper"></div>
+    </div>
+</div>
+
+<script>
+const book = {"title": "标注", "author": "TxtPush AI Writer", "description": "一个守着三亩果园的老把式，发现自己的经验被装进了山上的智算中心；当机器学会了他的一切，他和他的果树，都成了系统里的一个标签。", "total_words": 2890, "chapters": [{"index": 1, "title": "标注", "words": 2890, "paragraphs": ["老韩的果园，在县城西边的坡上。", "三亩苹果，四十年了。树是他爹种下的。", "爹种树那年，老韩还小，光着脚跟在后面浇水。爹说，树认人，你对它好，它就对你好。老韩把这话记了一辈子。", "每年开春，他给每棵树施肥、剪枝、刮老皮。刮老皮要趁树还睡着，一刮，藏在皮缝里的虫卵就露出来；下手轻了不管用，重了伤树。这分寸，是老韩用四十年摸出来的。谁家的树生了病，来问他，他不用挖根，只要看一眼叶子，摸一把树皮，就知道是哪样虫、缺哪样肥。村里人管他叫“老把式”。", "老韩六十五了。腰不好，膝盖也不好，一下雨就疼。可这园子，他一天没撂。", "坡下是村子。十几户，年轻的多半出去了，剩下的都是老头老太太。地种得少了，荒的多了。到了晚上，一村子没几盏灯。", "去年秋天，县里来了个大项目。", "山那边，推土机推平了一大片荒坡，说是在建“智算中心”。县里的喇叭天天讲，墙上也刷了标语：新质生产力、算力底座、未来已来。说是能给县里带来多少多少税收、多少多少就业，还能“带动产业升级”。", "老韩不懂什么叫“算力”。他只听懂了一件事：那东西费电。村口小卖部的老周说，一台机器的用电，顶咱一个村。", "从那年冬天起，山那边亮起了灯，日夜不灭。老韩夜里起来解手，看见那灯把半边天照得发白，像一场不会落的雪。", "他站了一会儿。雪是白的，可这白，是热的。", "开春，果园里来了人。", "两个年轻人，扛着长杆，杆子顶上装着摄像头，还有一块巴掌大的太阳能板。他们在果园四角立了四根杆子，又在地头装了一个方盒子，说是“环境监测站”。", "领头的年轻人姓刘，戴眼镜，说话客气，管老韩叫“韩叔”。", "小刘说：韩叔，这是“智慧农业”。您这园子是县里选的“示范点”。摄像头会拍树，拍叶子，拍果子，数据传回中心，机器学着认。往后谁家果树生病了，拍张照片，机器一看就知道是什么毛病、该用什么药。", "老韩围着那四根杆子转了一圈，问：那还要我干啥。", "小刘笑：您还是老把式呀。机器，是跟您学的。", "老韩也笑了。他这辈子，头一回被人说“跟您学”。", "“那它学成了呢？”老韩又问了一句。", "小刘说：学成了，就大家都能用了。", "杆子立起来那天，果园里多了四个红点，一闪，一闪。老韩蹲在旁边看了半天。那红点，让他想起年轻时候队里放电影，放映机也是这么一个红点，落在白布上，人就活了。", "他想，这回，红点落在他的树上。他这树，不知道要活给谁看。", "老韩的孙子，大伟，在山上的智算中心上班。", "大伟高中毕业，没考上大学，在南方打过几年工，进过厂，送过外卖。去年回来，进了中心，做“数据标注”。", "大伟说，这活不难，就是坐得住。一天十个小时，坐在电脑前，给一张张图片画框、打标签：这是苹果，这是叶子，这是病斑，这是“健康”。标错了，要返工；标得快，有奖金。", "大伟说，一个月四千五，比在外面强，还能在家。", "有一回，老韩上山去看他。", "中心的大厅又高又亮，冷气足，走进去，老韩打了个哆嗦。屋里一排一排的年轻人，眼睛盯着屏幕，手在鼠标上点，没人说话，只有键盘在响。", "大伟招手让他过去，指着一屏照片说：爷，你看，这一片，就是咱家的果园。", "老韩凑近看。屏幕上，是他的树，拍得清清楚楚，连树杈上那道旧疤都看得见。他认得那棵树——那是他爹种下的头一棵。", "他看着看着，心里堵得慌，说不出来是什么滋味。像自己的东西，被人悄悄搬走了，搁在了另一个地方，还开了灯给他看。", "大伟说：爷，你看，我给它标——“健康”。", "老韩没吭声。他伸出手，想摸一摸屏幕上那棵树。手到半空，又收回来了。他的手上有泥；屏幕是干净的。", "夏天，旱。", "天不下雨，一连四十多天。县里的水库，水位一天比一天低，露出来的库底，裂着一道道口子，像老人手背上的纹。", "水管所的人下乡来，站在地头讲：今年要“保重点”。山上的智算中心，要给机器降温，用电用水，都是“优先保”。村里浇地的水，得限量，隔天放。", "老韩问：限多少。", "人家说：错峰。今天你家浇，明天他家浇。", "老韩的果园，靠着一道老渠。渠里的水，一天比一天细。轮到他的那天，他从清早等到晌午，才等来一汪浑水，顺着渠沟爬过来，爬到地头，就爬不动了。三亩果园，浇不了几棵树。", "他又去找村里。村里也难：老韩，人家是大项目，是县里的命脉，是上过电视的。你就忍忍，等下了雨。", "他又去找镇上。镇上的人说得更明白：老韩，机器一停，损失是按秒算的。你的树，停一天，能咋。", "老韩回来，蹲在渠边，看那点浑水一点一点渗进土里。", "他想，一台机器，凭什么比一村人还金贵。", "可他没处问。他这辈子，会看天，会看树，不会看那些纸上的字。", "那一季的苹果，结得不多，落得倒早。", "缺水，果子小，皮上裂着口。收果子的贩子开着三轮来，蹲在树下，拿起一个，翻来覆去看，撇撇嘴：韩叔，今年这品相，压价啊。", "老韩问：压多少。", "贩子伸出两根指头。", "老韩没跟他争。他把筐里的果子一个一个挑，把裂了口的拣出来，剩下好的，装袋，过秤。过完秤，他坐在树下，点了一根烟，慢慢抽。", "烟快抽完时，他看见坡下老李家的地头，那四根杆子已经拆了。老李把地“流转”给了中心，一年拿点租金，人进城带孙子去了。走之前，老李来劝过他：老韩，签了吧，一把年纪了，跟地较什么劲。", "老韩当时说：地是我爹的。", "那天夜里，他睡不着，一个人走进果园。", "四角的摄像头，红点一闪，一闪。他站在红点底下，站了很久。山那边，机房的灯还亮着，白得晃眼。", "他想起爹的话：树认人。可如今，认树的，好像是山上的机器。", "他想不明白：为什么山上的机器，比地里的树重要。", "没过多久，中心的人又来了。还是小刘。", "小刘说：韩叔，您这片园子，中心想整体租下来，做“实训基地”。一年给您的钱，比您种地强，还旱涝保收。您也省心，不用再守着这二亩三分地了。", "老韩蹲着，没说话。", "小刘又说：您孙子也在中心。您要是签了，他还能转岗，做“现场运维”，工资更高，也比现在体面。", "老韩抬起头，看了看那四根杆子，又看了看坡下的村子。", "他想起爹种树那年，光着脚浇水；想起自己给每棵树刮老皮，刮得手指发黑；想起屏幕上，大伟指着那棵树说：“我给它标——健康。”", "他问小刘：租了以后，树还在不。", "小刘说：在，都在。就是……归中心的系统管，您不用操心了。您就每天来看看，浇浇水，成不。", "老韩低下头，抠着地里的土。土是干的，一抠就成粉，从指缝里漏下去。", "过了半晌，他说：树是我爹的，地是我的。你们要数据，我给你们拍。要地——不租。", "小刘愣了愣，劝了两句，见他不动，就走了。", "老韩一个人在地里蹲到天黑。", "秋天，山上的灯还是亮着，一天没停过。", "老韩的果园，卖果子的钱，只够过年。", "大伟回来，劝他：爷，签了吧，别再犟了。你图个啥。", "老韩没应他，也没骂他。他每天照样进园子，给树刮皮，剪枝，捡落果。天冷了，他熬了一锅石灰水，给每棵树干刷上白灰，从根刷到杈。", "刷到那棵老树时，他停了一会儿。那是爹种的头一棵，也是他在屏幕上认得的那棵。", "他刷得很慢。白灰刷在树皮上，凉凉的。", "有一天午后，他正刷着，头顶上嗡嗡响。", "他抬头，看见一个黑点，在果园上头绕圈。是无人机。中心在给他的园子航拍，做“实训基地”的素材。", "无人机转了一圈，飞走了。", "老韩的眼睛里，还留着一个红点，闪了一下，就没了。", "他揉了揉眼。他分不清，那是摄像头的光，还是自己的眼花。", "他低下头，接着刷他的白灰。一下，一下。", "白发落在他的肩上，像霜。"]}]};
+const L = {"cover_label": "扉页与作品简介", "unit": "字", "by": "作者：", "meta_sep": " | 全书约 ", "intro_title": "作品概念与梗概", "prev": "← 上一章", "next": "下一章 →", "start": "开始阅读第一章 →", "ch_prefix": "第 ", "ch_mid": " 章 | ", "theme_dark": "☀️ 亮色模式", "theme_light": "🌓 暗色模式"};
+let currentIndex = -1; // -1 = title page / synopsis
+let fontSize = 17;
+
+function renderSidebar() {
+    const list = document.getElementById("chapterList");
+    list.innerHTML = `<li class="chapter-item ${currentIndex === -1 ? 'active' : ''}" onclick="goToChapter(-1)">
+        <span>📖 ${L.cover_label}</span>
+    </li>`;
+    book.chapters.forEach((ch, idx) => {
+        const li = document.createElement("li");
+        li.className = "chapter-item" + (currentIndex === idx ? " active" : "");
+        li.innerHTML = `<span>${ch.title}</span><span class="ch-words">${ch.words}${L.unit}</span>`;
+        li.onclick = () => goToChapter(idx);
+        list.appendChild(li);
+    });
+}
+
+function renderContent() {
+    const wrapper = document.getElementById("articleWrapper");
+    const label = document.getElementById("currentChLabel");
+    if (currentIndex === -1) {
+        label.innerText = L.cover_label;
+        wrapper.innerHTML = `
+            <div class="article-header">
+                <h1>${book.title}</h1>
+                <div class="article-meta">${L.by}${book.author}${L.meta_sep}${book.total_words.toLocaleString()}${L.unit}</div>
+            </div>
+            <div class="intro-box">
+                <h3 style="margin-bottom:12px;color:var(--accent);">${L.intro_title}</h3>
+                <div style="white-space: pre-wrap; line-height:1.75;">${book.description}</div>
+            </div>
+            <div class="nav-buttons">
+                <button class="nav-btn" disabled>${L.prev}</button>
+                <button class="nav-btn" onclick="goToChapter(0)">${L.start}</button>
+            </div>
+        `;
+    } else {
+        const ch = book.chapters[currentIndex];
+        label.innerText = ch.title;
+        const pTags = ch.paragraphs.map(p => `<p style="font-size: ${fontSize}px;">${p}</p>`).join("");
+        wrapper.innerHTML = `
+            <div class="article-header">
+                <h1>${ch.title}</h1>
+                <div class="article-meta">${L.ch_prefix}${ch.index}${L.ch_mid}${ch.words}${L.unit}</div>
+            </div>
+            <div class="article-body">
+                ${pTags}
+            </div>
+            <div class="nav-buttons">
+                <button class="nav-btn" onclick="goToChapter(currentIndex - 1)">${L.prev}</button>
+                <button class="nav-btn" onclick="goToChapter(currentIndex + 1)" ${currentIndex >= book.chapters.length - 1 ? 'disabled' : ''}>${L.next}</button>
+            </div>
+        `;
+    }
+    document.getElementById("content-container").scrollTop = 0;
+}
+
+function goToChapter(idx) {
+    if (idx < -1 || idx >= book.chapters.length) return;
+    currentIndex = idx;
+    renderSidebar();
+    renderContent();
+}
+
+function toggleTheme() {
+    const current = document.documentElement.getAttribute("data-theme");
+    const next = current === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", next);
+    document.getElementById("themeBtn").innerText = next === "dark" ? L.theme_dark : L.theme_light;
+}
+
+function changeFontSize(delta) {
+    fontSize = Math.max(14, Math.min(26, fontSize + delta));
+    const paras = document.querySelectorAll(".article-body p");
+    paras.forEach(p => p.style.fontSize = fontSize + "px");
+}
+
+renderSidebar();
+renderContent();
+</script>
+</body>
+</html>
