@@ -1,0 +1,26 @@
+{
+  "title": "霸总",
+  "genre": "通用",
+  "keywords": [
+    "微短剧",
+    "短剧出海",
+    "群演",
+    "横店",
+    "一夜暴富",
+    "中年",
+    "尊严"
+  ],
+  "premise": "一个五十多岁的群演，一天要在微短剧里当几十回董事长；他把一夜暴富演给全世界看，回到出租屋，连下个月房租都没着落。",
+  "target_chapters": 1,
+  "words_per_chapter": 4500,
+  "pov": "第三人称有限",
+  "tone": "平静、克制、带一点黑色幽默",
+  "audience": "大众读者",
+  "extra": "",
+  "asset_prefix": "BaZong",
+  "chapters_mode": "fixed",
+  "min_chapters": 5,
+  "max_chapters": 12,
+  "work_type": "short",
+  "kb_modules": []
+}
