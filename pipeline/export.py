@@ -874,6 +874,15 @@ _WX_BODY_P = ("margin: 0 0 1.6em; font-size: 16px; line-height: 1.9; "
               "text-indent: 2em; color: #333333; letter-spacing: 0.5px;")
 
 
+def _wx_clear_html(dir_path: str) -> None:
+    """清掉上次生成的 HTML（避免标题/文件名变更后残留旧文件）。"""
+    if not os.path.isdir(dir_path):
+        return
+    for name in os.listdir(dir_path):
+        if name.lower().endswith(".html"):
+            os.remove(os.path.join(dir_path, name))
+
+
 def _wx_safe_name(text: str) -> str:
     """文件名安全化：空格与非法字符转连字符。"""
     return re.sub(r'[\\/:*?"<>|\s]+', "-", text).strip("-") or "untitled"
@@ -1072,6 +1081,8 @@ def export_wechat(proj: Any, strip: bool = True) -> Dict[str, str]:
     total_words = sum(wc for _, _, wc in chapters)
     out_dir = proj.path("dist_wechat")
     os.makedirs(out_dir, exist_ok=True)
+    _wx_clear_html(out_dir)
+    _wx_clear_html(os.path.join(out_dir, "连载"))
     results: Dict[str, str] = {}
 
     issues: List[Tuple[int, str, str, int]] = []

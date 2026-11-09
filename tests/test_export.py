@@ -112,10 +112,17 @@ class TestExport(unittest.TestCase):
             def path(self, *p):
                 return os.path.join(root, *p)
 
+        # 预置上一个版本的残留文件：导出后应被清理
+        stale_dir = os.path.join(root, "dist_wechat", "连载")
+        os.makedirs(stale_dir, exist_ok=True)
+        with open(os.path.join(stale_dir, "第99期-旧文件.html"), "w", encoding="utf-8") as f:
+            f.write("stale")
+
         res = export.export_wechat(_P())
         out_dir = res["wechat"]
         self.assertTrue(os.path.isdir(out_dir))
         series = os.path.join(out_dir, "连载")
+        self.assertFalse(os.path.exists(os.path.join(stale_dir, "第99期-旧文件.html")))
         names = sorted(os.listdir(series))
         self.assertEqual(len(names), 2)
         with open(os.path.join(series, names[0]), encoding="utf-8") as f:
