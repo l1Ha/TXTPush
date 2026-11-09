@@ -1,0 +1,31 @@
+{
+  "title": "看孩子",
+  "genre": "都市现实",
+  "keywords": [
+    "云中市",
+    "托付",
+    "烫伤",
+    "诉讼",
+    "好意施惠",
+    "月嫂",
+    "母职",
+    "底层互助",
+    "过失",
+    "新闻改编"
+  ],
+  "premise": "一个做月嫂的单亲母亲，把两岁的儿子无偿托付给邻居老两口照看；孩子被开水烫伤、延误送医身亡。她索赔一百一十六万，法院认定好意帮助，判赔十五万；两户好人，被一场事故和一份判决一起压垮。",
+  "target_chapters": 1,
+  "words_per_chapter": 5000,
+  "pov": "第三人称有限",
+  "tone": "平静、克制、白描；短句；不煽情、不点题、不解释",
+  "audience": "大众读者",
+  "extra": "",
+  "asset_prefix": "KanHaiZi",
+  "chapters_mode": "fixed",
+  "min_chapters": 5,
+  "max_chapters": 12,
+  "work_type": "short",
+  "kb_modules": [
+    "09-短篇写作"
+  ]
+}

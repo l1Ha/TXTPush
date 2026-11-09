@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>看孩子 - TxtPush 在线阅读</title>
+<style>
+:root {
+    --bg-primary: #f8fafc;
+    --bg-card: #ffffff;
+    --text-primary: #1e293b;
+    --text-secondary: #64748b;
+    --border-color: #e2e8f0;
+    --accent: #2563eb;
+    --accent-hover: #1d4ed8;
+    --sidebar-bg: #f1f5f9;
+}
+[data-theme="dark"] {
+    --bg-primary: #0f172a;
+    --bg-card: #1e293b;
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --border-color: #334155;
+    --accent: #38bdf8;
+    --accent-hover: #0ea5e9;
+    --sidebar-bg: #111827;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.85;
+    transition: background-color 0.2s, color 0.2s;
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+}
+#sidebar {
+    width: 320px;
+    background: var(--sidebar-bg);
+    border-right: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    flex-shrink: 0;
+}
+.sidebar-header {
+    padding: 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+.sidebar-header h2 {
+    font-size: 1.15em;
+    font-weight: 700;
+    margin-bottom: 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.sidebar-meta {
+    font-size: 0.85em;
+    color: var(--text-secondary);
+}
+.chapter-list {
+    overflow-y: auto;
+    flex: 1;
+    list-style: none;
+}
+.chapter-item {
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--border-color);
+    cursor: pointer;
+    font-size: 0.95em;
+    transition: background 0.15s;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.chapter-item:hover {
+    background: rgba(0,0,0,0.04);
+}
+.chapter-item.active {
+    background: var(--accent);
+    color: #ffffff;
+    font-weight: 600;
+}
+.chapter-item .ch-words {
+    font-size: 0.8em;
+    opacity: 0.75;
+}
+#main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+.topbar {
+    padding: 12px 24px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--bg-card);
+}
+.controls button {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 6px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.88em;
+    margin-left: 8px;
+    transition: 0.15s;
+}
+.controls button:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+#content-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: 40px 10%;
+    display: flex;
+    justify-content: center;
+}
+.content-wrapper {
+    max-width: 780px;
+    width: 100%;
+}
+.article-header {
+    text-align: center;
+    margin-bottom: 36px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+.article-header h1 {
+    font-size: 1.85em;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+.article-meta {
+    font-size: 0.9em;
+    color: var(--text-secondary);
+}
+.article-body p {
+    text-indent: 2em;
+    margin-bottom: 1.4em;
+    font-size: 1.1em;
+    text-align: justify;
+}
+.intro-box {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-left: 5px solid var(--accent);
+    padding: 24px;
+    border-radius: 8px;
+    margin-bottom: 40px;
+}
+.nav-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 50px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-color);
+}
+.nav-btn {
+    padding: 10px 20px;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    background: var(--bg-card);
+    color: var(--text-primary);
+    cursor: pointer;
+    font-size: 0.95em;
+}
+.nav-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+@media (max-width: 768px) {
+    body { flex-direction: column; }
+    #sidebar { width: 100%; height: 200px; }
+    #content-container { padding: 20px 5%; }
+}
+</style>
+</head>
+<body>
+<div id="sidebar">
+    <div class="sidebar-header">
+        <h2 title="看孩子">看孩子</h2>
+        <div class="sidebar-meta">作者：TxtPush AI Writer · 1 章 / 4873 字</div>
+    </div>
+    <ul class="chapter-list" id="chapterList"></ul>
+</div>
+<div id="main">
+    <div class="topbar">
+        <span id="currentChLabel">扉页与作品简介</span>
+        <div class="controls">
+            <button onclick="changeFontSize(-1)">A-</button>
+            <button onclick="changeFontSize(1)">A+</button>
+            <button onclick="toggleTheme()" id="themeBtn">🌓 切换暗色</button>
+        </div>
+    </div>
+    <div id="content-container">
+        <div class="content-wrapper" id="articleWrapper"></div>
+    </div>
+</div>
+
+<script>
+const book = {"title": "看孩子", "author": "TxtPush AI Writer", "description": "一个做月嫂的单亲母亲，把两岁的儿子无偿托付给邻居老两口照看；孩子被开水烫伤、延误送医身亡。她索赔一百一十六万，法院认定好意帮助，判赔十五万；两户好人，被一场事故和一份判决一起压垮。", "total_words": 4873, "chapters": [{"index": 1, "title": "看孩子", "words": 4873, "paragraphs": ["八月底的那天下午，马红梅把毛蛋领到车棚门口。", "车棚在四号楼的北墙根，铁皮顶，夏天晒得烫手。倪守山看车棚，顺带卖矿泉水、火腿肠、打火机。里侧隔出半间，铁丝上挂着毛巾和塑料袋，底下支一张木板床，老两口中午歇脚。", "毛蛋两岁，穿着件短袖，手里攥着半块饼干。他不认得倪守山，往红梅腿后头躲。", "何秀兰从柜台后绕出来，蹲下，冲他拍手：让奶奶看看。哟，长这么高了。", "红梅把蓝布包放在柜台上，又从兜里掏出张纸。纸上写满了：早上一个鸡蛋羹，中午跟着吃，晚上八点半一袋奶，夜里蹬被子，暖水瓶搁高别让他够着，别让碰插座。最后一行：他怕黑，晚上给他留个小灯。她一共写了十七行。", "何姨，麻烦你们。就三个月，北京的单子，两单连着。她说，钱我按月给。", "给啥钱。何秀兰把纸推回去，你把他搁这儿，我还多个说话的呢。", "倪守山正蹲在门口修车，抬头说：搁这儿吧，给我解闷儿。", "车棚她熟。上班的自行车在这儿存了六年。有一回她上晚班，回家发现毛蛋发烧，是倪守山蹬着三轮把娘俩送到医院，挂号的钱还是他垫的。这份人情，她一直没还上。", "红梅把钱往抽屉里塞，何秀兰又塞回她兜里，推了两个来回。红梅眼圈红了，说那我给毛蛋买秋衣。何秀兰说：买啥，我把旧背心改改，软和。", "走之前，红梅说去趟厕所，其实是拐到楼后头，站了一会儿。回来的时候，毛蛋已经不躲了，蹲在门口看倪守山打气。气筒一下，他跟着嘿一声；一下，嘿一声。", "倪守山笑了：这小子，有声。", "红梅把蓝布包交代完，又把五百块钱压在一罐没开封的奶粉底下。她没吭声。", "她走的时候没敢回头。走到楼拐角，还是没忍住。毛蛋站在车棚门口，举着那半块饼干冲她摆手。她也摆手，快点了两下，转身进了巷子。", "那根电水壶的线，当时就垂在柜台边上，红色的，从插排上拖下来，一直拖到地上。红梅看见了，说：何姨，这线收收，别让娃娃拽。", "何秀兰在里头答：天天跟着他屁股后头呢，拽不着。", "北京。雇主家在十七层，窗户能看见半个城。产妇剖腹产，奶下不来，孩子两小时一喂。红梅的觉被切成一段一段，每段四十分钟。", "她把手机调成静音，又把倪守山、何秀兰两个号设成特殊提醒——静音里也能响。", "头一个星期，何秀兰不会打视频，只会发语音。语音里背景热闹：车棚门口有人打牌，毛蛋在喊。第二个星期她学会了，镜头先照到天花板，又照到自己的半张脸，最后才找到毛蛋——他在啃焙子，鼻子上沾着面渣。", "叫妈妈。何秀兰说。", "毛蛋盯着屏幕，说：买。", "红梅笑了。笑着笑着，把脸转开了。", "一单二十六天，一万二，公司抽两成。剩下的，是给毛蛋攒的。她算过：再干两单，加上手里的，够在云中租个门脸，开个小饭桌。她跟何秀兰说过这个打算。何秀兰说：行，到时候我帮你看灶。", "九月里的一天，视频那头，毛蛋从何秀兰腿边上蹭过去，喊了一声奶奶，又脆又顺，像喊过一千遍。何秀兰赶紧哎了一声。", "红梅在这头听见了。半夜给孩子拍嗝的时候，脑子里还是那声奶奶，手上慢了半拍。雇主问：马姐？她说：没事，嗝出来了。", "倪守山用奶粉纸箱给毛蛋做了个小汽车，拿绳子拉着，在车棚门口来回走。毛蛋坐在里头，攥着个塑料盖当方向盘，嘴里滴滴。何秀兰带他去早市，他认得烧麦的蒸笼，走到那儿就停下，仰头看白汽。何秀兰买一个，吹凉了，一点点掰给他。", "毛蛋在车棚有自己的位置：柜台边一个小板凳。谁来存车，他就把手一指；有人逗他，他也不怕生。倪守山教他认车：黑的是轿车，白的是面包，红的是三轮。他学得快，见了黑车就喊：轿——", "十月里该打的疫苗，也是何秀兰带他去的。社区医院在二楼，回来何秀兰说：哭是哭了，一颗糖就哄住了。", "十月，公司来了第二单，催她上户。红梅给何秀兰打电话：何姨，再帮我一个月。回去我给毛蛋买个大汽车，能坐人的。", "买啥车。何秀兰说，你早点回来。", "那五百块，何秀兰在奶粉罐底下摸出来，当天就要退。红梅不要，说给毛蛋买秋衣。推来推去，何秀兰说：那我看着办。", "她看着办，就是等了等。十一月天冷了，她带毛蛋去市场，用那五百，买了一双棉鞋。深蓝色的，鞋面上缝着两只黄老虎。", "毛蛋穿上，在视频里跺脚，踩得咚咚响。红梅说好看。毛蛋说：鞋。红梅说：嗯，鞋。", "那天是十六号。视频里说好了，再有二十来天她就回去，接毛蛋回家。何秀兰说不慌，你忙你的。倪守山在旁边说：屋里有暖气，冻不着。", "十一月十七号，降温。窗玻璃上的霜花，到七点还没化。", "天说冷就冷了。倪守山去开车棚的门，铁锁冻得发涩。何秀兰一边烧水，一边把毛蛋的棉鞋在腿弯里焐热，才让他穿上。电水壶是白的，用了四五年，壶底一圈水垢，烧开了叫起来像哨子。", "水开了。何秀兰转身去拿暖水瓶。", "就这一个转身。", "毛蛋够着了那根线。壶从桌沿上倒下来，一整壶开水，浇在他前胸，顺着胳膊下去。", "他站在那里，先是没声。", "何秀兰听见的是水壶砸在地上的响。她回头，看见毛蛋张着嘴，那一声哭才刚出嗓子。", "她冲过去扒他的衣服。湿衣服一拽，带下来一块皮。她手抖得不敢再动，抱起他就往水龙头底下送，凉水冲了十几分钟。后来她挤了牙膏，抹得满手都是。老法子，她小时候烫了手，她妈就是这么抹的。", "毛蛋哭累了，睡着了。", "倪守山说去医院。何秀兰说再看看。她说不清自己在怕啥——去医院，人家一问咋烫的、啥时候烫的，咋说？再说，孩子看着睡着了，兴许睡一觉就没事。倪守山没再坚持。他后来无数次想起再看看这三个字，想一次，手上搓一次。", "中午，毛蛋不吃东西，喝了点水。下午两点多，何秀兰掀开被子看：起了泡，有几块发白。她摸他额头，烫手。", "她腿一软，坐在床沿上喊：守山——", "他们打车去的医院。老城区不好打车，倪守山跑到马路当中去拦，拦到第三辆才是空的。", "急诊医生掀开看了一眼，就让进抢救室。护士一路小跑，问：咋才送来？", "倪守山张了张嘴，说：以为没事。", "傍晚七点二十，医生出来，说尽力了。", "何秀兰坐在走廊地上，不哭，干呕。倪守山蹲在墙根，手在膝盖上搓，搓得手背通红。医院报了警。", "民警来了两个，问了话，给水壶、暖水瓶、地上的插排都拍了照。电水壶装进证物袋，白色的，壶底朝外，那圈水垢看得清清楚楚。", "倪守山一遍一遍地说：我们以为没事。我们真是把他当自家的。", "民警在本子上记，不抬头。", "后半夜，倪伟从深圳打来电话——民警帮着联系的。倪伟说买早班飞机，让爸别慌。倪守山说：慌啥，我慌啥。挂了电话，他在楼梯间抽了半包烟。", "红梅接到电话，是晚上八点五十。雇主家刚吃完晚饭。", "电话是倪守山打的：红梅，你回来一趟。毛蛋……烫了一下。", "烫哪儿了？严重不？", "那头半天没出声。后来换了个男的说话，是民警：你是孩子的母亲吗？请你尽快回来。", "红梅的手机掉在地板上。她捡起来，又问了一遍：烫哪儿了？", "民警说：孩子已经不在了。", "她坐的是夜里两点的车。临走，女主人塞给她一个信封，说路上用。她没推。", "第二天中午到的。倪伟在车站接她，一路没人说话。先去医院办手续，再去太平间。", "护士把布揭开。红梅先看见的是纱布，从胸口缠到肩膀，缠得规规整整。再往上看，是脸。脸是好的，像睡着。", "她伸手去摸他的脚。脚上穿着那双棉鞋，深蓝的，黄老虎。鞋底干干净净，还没舍得在地上磨。", "她说：鞋是新的。", "没人接她这句话。", "她没哭出声。护士递纸巾，她说不用。", "临出来，护士让在外间一张单子上签字。死亡时间那一行写着：十一月十七日，十九点二十。她把那一行看了两遍，才签下名字。", "出来的时候，倪守山和何秀兰在走廊里。何秀兰往前一步，腿一弯就要跪，被倪伟扶住了。红梅抬起手。她自己也说不清要干啥——打她，还是抱她。手在半空停了一下，收回来。她攥住自己的头发，蹲下去，额头抵着膝盖，蹲了很久。走廊的水磨石很凉。", "后事是倪伟跑前跑后办的，红梅什么也拿不了主意。她给北京的女主人打电话，说不干了。对方在那头叹了口气，说钱我们照付。她说：不用。", "夜里，她坐在车棚那张木板床上。何秀兰把毛蛋的小被子抱过来，搭在她腿上，说：他睡觉轻，你陪着他。", "两个人坐到天亮，谁也没再说一句话。", "丧事办得很小。老家的哥哥马红军来了，姐姐也来了。遗像是从视频里截的图，手机里最清楚的一帧：毛蛋穿着旧背心，笑着，有点糊，边上还露着半只手。谁的手，没人问。", "毛蛋走后，红梅在云中的家里住了些天。四楼的屋子空，暖气刚来，管子里的水哗哗响。", "从前红梅上晚班，毛蛋就在车棚吃晚饭，一双筷子一个小碗，摆在那张木板床上。", "马红军张罗着找律师。他不是坏心，他是县城五金店里跟人说事说惯了的那种人，嗓门大，讲理，认死理。他说：妹子，不是为钱。人不能白死。", "律师是个年轻人，把一张清单铺在她面前，一行一行念：死亡赔偿金、丧葬费、精神损害抚慰金、误工费、交通费……一共一百一十六万三千二。", "这么多？红梅问。", "这是按标准算的，不是我要多少。律师说，起诉之前，法院会先调解。", "调解那天，倪家来的是老两口和倪伟。倪守山把一个红存折放在桌上：六万三，给倪伟结婚留的。砸锅卖铁我们认，可要命的数，我们是真没有。", "调解员问：事发当天，是谁提出不送医的？", "何秀兰说：是我。", "倪守山说：我没拦住。", "两个人抢着认这个错，像在争一件东西。", "何秀兰一直低着头。", "红梅说：不是钱的事。", "话是马红军接的：法律咋判咋是。", "调解没成。出了门，何秀兰把存折又推过来：你先拿着，拿着我心里好受。", "红梅没接。", "开庭前，律师跟她交底：咱这案子有个特殊之处。对方是没收费的帮忙，法律上叫好意施惠。责任会减轻。你要有准备。", "啥叫好意施惠？", "就是没拿钱、白帮忙。", "红梅坐在椅子上，看着桌上那张清单，看了很久。她问：要是我一个月给她三千呢？", "律师愣了一下：那性质就不一样了。", "我没给过她钱。红梅说，她也没要过。", "过了一会儿，她又说：她给毛蛋买过一双鞋。五百块钱换的。", "律师嗯了一声，没说话。", "开庭是第二年十一月。那天她提前到了。倪家三口坐在走廊另一头，何秀兰的头发白了一片，从鬓角一直白到头顶。", "庭不大，暖气烘着，很静。", "法官四十几岁，女的，念判决的时候不快不慢：", "……被告倪守山、何秀兰接受委托照看两岁幼儿，未尽到审慎注意义务，致幼儿死亡，应当承担一定责任。考虑其照看系好意帮助，未收取任何费用，对损害后果无主观故意，且在发现幼儿异常后及时送医，故酌定赔偿原告十五万元。驳回原告其余诉讼请求。", "及时送医。红梅听见了这四个字，又像没听见。", "马红军说要上诉。红梅说：算了吧。", "散庭后，倪守山追到走廊，从怀里摸出那个存折，塞进红梅手里：六万三，先拿着。剩下的八万七，我们卖车棚。我一个月给你三千，打二十九个月。你给我二十九个月。", "他背比去年弯，手指头上全是冻裂的口子。", "红梅说：不用写欠条。", "倪守山说：得写。", "后来就写了。法院见证，两张纸，按了手印。", "案子见了报。网上的评论，骂她的和骂倪家的一样多。有人说十五万判得对，好人不能赔垮；有人说孩子白死了；还有人说，两岁的孩子扔给别人就没影了，心真大。", "红梅看了两条，把手机关了。评论里都管他叫幼童。没有一个人叫他的名字。", "车棚盘出去了，新主人改成卖菜。清东西那天，从柜子底下滚出来一个皮球，是毛蛋的。倪守山把球擦干净，放在柜台上。新主人问：这球谁的？他说：没人了，给小孩玩吧。", "他在隔壁小区看了大门，夜里值班。何秀兰不大出门。有人在早市见过她一回，在烧麦摊子前面站了一会儿，又走了。", "红梅歇了一个月，又上了户。这回是本地的单，她跟公司说明，不出市了。", "清明那天，她买了一个能坐人的小汽车——当初答应毛蛋的那种。坟在城郊的李家梁，是倪家帮着找的地；碑不大，刻的是小名：毛蛋。", "小汽车摆在碑前。风大，车轱辘自己转了一下，又停住。", "每月十五号，她的手机响一声：", "【××银行】您尾号 1234 的账户收入人民币 3,000.00 元，附言：毛蛋。", "有一个月，十五号一整天都没响。夜里她醒了三回，看手机。第二天早上八点半，短信来了。还是那两个字。", "这钱是倪守山两口子的退休金和看大门的工资。她一笔没花，在银行单开了个户，每笔都转进去存着。存折放在她妈留下的一只铁盒子里。", "五月里，她回了一趟云中，去取剩下的东西。何秀兰把蓝布包收拾好了：两套衣服的扣子都重新钉过，吸管杯刷得干干净净。底下压着疫苗本。她翻到最后一页，钢印还在，后面空着——没有下一针了。", "腊月里，新东家厨房烧水。壶一响，她就拔了插头——响到一半的尖声，断在灶台上。", "她把那根线从地上收起来，在壶身上绕了两圈，绕得齐齐的。", "（全文完）"]}]};
+const L = {"cover_label": "扉页与作品简介", "unit": "字", "by": "作者：", "meta_sep": " | 全书约 ", "intro_title": "作品概念与梗概", "prev": "← 上一章", "next": "下一章 →", "start": "开始阅读第一章 →", "ch_prefix": "第 ", "ch_mid": " 章 | ", "theme_dark": "☀️ 亮色模式", "theme_light": "🌓 暗色模式"};
+let currentIndex = -1; // -1 = title page / synopsis
+let fontSize = 17;
+
+function renderSidebar() {
+    const list = document.getElementById("chapterList");
+    list.innerHTML = `<li class="chapter-item ${currentIndex === -1 ? 'active' : ''}" onclick="goToChapter(-1)">
+        <span>📖 ${L.cover_label}</span>
+    </li>`;
+    book.chapters.forEach((ch, idx) => {
+        const li = document.createElement("li");
+        li.className = "chapter-item" + (currentIndex === idx ? " active" : "");
+        li.innerHTML = `<span>${ch.title}</span><span class="ch-words">${ch.words}${L.unit}</span>`;
+        li.onclick = () => goToChapter(idx);
+        list.appendChild(li);
+    });
+}
+
+function renderContent() {
+    const wrapper = document.getElementById("articleWrapper");
+    const label = document.getElementById("currentChLabel");
+    if (currentIndex === -1) {
+        label.innerText = L.cover_label;
+        wrapper.innerHTML = `
+            <div class="article-header">
+                <h1>${book.title}</h1>
+                <div class="article-meta">${L.by}${book.author}${L.meta_sep}${book.total_words.toLocaleString()}${L.unit}</div>
+            </div>
+            <div class="intro-box">
+                <h3 style="margin-bottom:12px;color:var(--accent);">${L.intro_title}</h3>
+                <div style="white-space: pre-wrap; line-height:1.75;">${book.description}</div>
+            </div>
+            <div class="nav-buttons">
+                <button class="nav-btn" disabled>${L.prev}</button>
+                <button class="nav-btn" onclick="goToChapter(0)">${L.start}</button>
+            </div>
+        `;
+    } else {
+        const ch = book.chapters[currentIndex];
+        label.innerText = ch.title;
+        const pTags = ch.paragraphs.map(p => `<p style="font-size: ${fontSize}px;">${p}</p>`).join("");
+        wrapper.innerHTML = `
+            <div class="article-header">
+                <h1>${ch.title}</h1>
+                <div class="article-meta">${L.ch_prefix}${ch.index}${L.ch_mid}${ch.words}${L.unit}</div>
+            </div>
+            <div class="article-body">
+                ${pTags}
+            </div>
+            <div class="nav-buttons">
+                <button class="nav-btn" onclick="goToChapter(currentIndex - 1)">${L.prev}</button>
+                <button class="nav-btn" onclick="goToChapter(currentIndex + 1)" ${currentIndex >= book.chapters.length - 1 ? 'disabled' : ''}>${L.next}</button>
+            </div>
+        `;
+    }
+    document.getElementById("content-container").scrollTop = 0;
+}
+
+function goToChapter(idx) {
+    if (idx < -1 || idx >= book.chapters.length) return;
+    currentIndex = idx;
+    renderSidebar();
+    renderContent();
+}
+
+function toggleTheme() {
+    const current = document.documentElement.getAttribute("data-theme");
+    const next = current === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", next);
+    document.getElementById("themeBtn").innerText = next === "dark" ? L.theme_dark : L.theme_light;
+}
+
+function changeFontSize(delta) {
+    fontSize = Math.max(14, Math.min(26, fontSize + delta));
+    const paras = document.querySelectorAll(".article-body p");
+    paras.forEach(p => p.style.fontSize = fontSize + "px");
+}
+
+renderSidebar();
+renderContent();
+</script>
+</body>
+</html>
