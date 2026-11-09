@@ -287,17 +287,26 @@ def cmd_export(args: argparse.Namespace) -> None:
     if not proj.exists():
         raise SystemExit(red(f"项目不存在：{args.name}"))
     lang = getattr(args, "lang", "zh")
-    fmts = [args.format] if args.format != "all" else ["epub", "html", "txt"]
     suffix = "（英文版）" if lang == "en" else ""
     print(cyan(f"正在导出《{proj.config().get('title', proj.name)}》{suffix}..."))
-    res = export.export_all(proj, formats=fmts, strip=not args.keep_anchors, lang=lang)
+    if args.format == "wechat":
+        if lang == "en":
+            raise SystemExit(red("✗ 公众号导出仅支持中文版（公众号为中文平台）"))
+        res = export.export_wechat(proj, strip=not args.keep_anchors)
+    else:
+        fmts = [args.format] if args.format != "all" else ["epub", "html", "txt"]
+        res = export.export_all(proj, formats=fmts, strip=not args.keep_anchors, lang=lang)
     if not args.keep_anchors:
         print(f"  ℹ 设定编号锚点（W/C）已剥离为出版净稿；章节与成书保留标记供审校/audit 溯源")
     print(green("✔ 导出成功！产物清单："))
     for fmt_name, path in res.items():
         rel = os.path.relpath(path, ROOT)
-        size_kb = round(os.path.getsize(path) / 1024, 1)
-        print(f"  • [{fmt_name.upper():<4}] {rel} ({size_kb} KB)")
+        if os.path.isdir(path):
+            count = sum(len(fs) for _, _, fs in os.walk(path))
+            print(f"  • [{fmt_name.upper():<12}] {rel}（目录，共 {count} 个文件）")
+        else:
+            size_kb = round(os.path.getsize(path) / 1024, 1)
+            print(f"  • [{fmt_name.upper():<4}] {rel} ({size_kb} KB)")
 
 
 def cmd_translate(args: argparse.Namespace) -> None:
@@ -433,10 +442,10 @@ def build_parser() -> argparse.ArgumentParser:
     ln.set_defaults(func=cmd_lint)
 
     # export
-    e = sub.add_parser("export", help="导出出版级电子书（EPUB 3.0 / 离线单文件 HTML 阅读器 / 规范排版 TXT）")
+    e = sub.add_parser("export", help="导出出版级电子书（EPUB 3.0 / 离线单文件 HTML 阅读器 / 规范排版 TXT）或微信公众号发布稿（wechat）")
     e.add_argument("name", help="项目标识")
-    e.add_argument("--format", choices=["epub", "html", "txt", "all"], default="all",
-                   help="导出格式：epub / html / txt / all（默认 all）")
+    e.add_argument("--format", choices=["epub", "html", "txt", "wechat", "all"], default="all",
+                   help="导出格式：epub / html / txt / wechat（公众号发布稿→dist_wechat/）/ all（默认 all）")
     e.add_argument("--keep-anchors", action="store_true",
                    help="保留（W5）（C6）等设定编号锚点（默认剥离为出版净稿；章节/成书始终保留供审校）")
     e.add_argument("--lang", choices=["zh", "en"], default="zh",

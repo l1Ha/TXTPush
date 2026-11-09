@@ -867,6 +867,244 @@ def export_txt(
     return output_path
 
 
+# ---- 微信公众号发布稿（连载 HTML + 全本合集 + 发布指南，粘贴即用） ----
+
+# 行内样式：微信编辑器会原样保留（浏览器打开后全选复制、直接粘贴）
+_WX_BODY_P = ("margin: 0 0 1.6em; font-size: 16px; line-height: 1.9; "
+              "text-indent: 2em; color: #333333; letter-spacing: 0.5px;")
+
+
+def _wx_safe_name(text: str) -> str:
+    """文件名安全化：空格与非法字符转连字符。"""
+    return re.sub(r'[\\/:*?"<>|\s]+', "-", text).strip("-") or "untitled"
+
+
+def _wx_cn_num(n: int) -> str:
+    """中文期号：1→一、10→十、14→十四。"""
+    digits = "零一二三四五六七八九"
+    if n <= 0:
+        return str(n)
+    if n < 10:
+        return digits[n]
+    if n == 10:
+        return "十"
+    if n < 20:
+        return "十" + digits[n - 10]
+    if n < 100:
+        return digits[n // 10] + "十" + (digits[n % 10] if n % 10 else "")
+    return str(n)
+
+
+def _wx_para_html(text: str) -> str:
+    return f'<p style="{_WX_BODY_P}">{html.escape(text)}</p>'
+
+
+def _wx_desc_html(description: str) -> str:
+    """「内容简介」引用块（首期与合集用）。"""
+    paras = _md_to_paragraphs(description or "")
+    if not paras:
+        return ""
+    inner = "\n".join(
+        '<p style="margin: 0 0 0.6em; font-size: 14px; line-height: 1.9; '
+        f'text-indent: 2em; color: #888888;">{html.escape(p)}</p>'
+        for p in paras)
+    return (
+        '<section style="border-left: 3px solid #d9d9d9; padding: 2px 0 2px 14px; margin: 0 0 2em;">\n'
+        '<p style="margin: 0 0 0.4em; font-size: 13px; color: #aaaaaa; letter-spacing: 2px;">内容简介</p>\n'
+        f'{inner}\n</section>')
+
+
+def _wx_doc(title: str, body: str) -> str:
+    """整页 HTML 包装（页面级样式仅供浏览器预览；粘贴时只带行内样式）。"""
+    return (
+        '<!DOCTYPE html>\n<html lang="zh-CN">\n<head>\n<meta charset="UTF-8">\n'
+        f'<title>{html.escape(title)}</title>\n</head>\n'
+        '<body style="margin: 0; padding: 24px 18px; background: #ffffff;">\n'
+        '<div style="max-width: 677px; margin: 0 auto;">\n'
+        f'{body}\n</div>\n</body>\n</html>\n')
+
+
+def _wx_issue_body(book: str, no: int, total: int, ch_title: str, text: str,
+                   desc_html: str, is_last: bool) -> str:
+    """单期正文：系列页眉 + 章题 +（首期）简介 + 正文 + 续尾标记。"""
+    parts = [
+        f'<p style="text-align: center; font-size: 13px; color: #999999; '
+        f'letter-spacing: 2px; margin: 0 0 0.6em;">《{html.escape(book)}》连载 · 第 {no} / {total} 期</p>',
+        f'<p style="text-align: center; font-size: 22px; font-weight: bold; color: #1a1a1a; '
+        f'margin: 0 0 1.6em; line-height: 1.5;">{html.escape(ch_title)}</p>',
+    ]
+    if desc_html:
+        parts.append(desc_html)
+    parts.extend(_wx_para_html(p) for p in _md_to_paragraphs(text))
+    end = "（全文完）" if is_last else "（未完待续）"
+    parts.append('<p style="text-align: center; font-size: 14px; color: #999999; '
+                 f'letter-spacing: 2px; margin: 2.4em 0 0;">{end}</p>')
+    return "\n".join(parts)
+
+
+def _wx_collection_body(book: str, description: str,
+                        chapters: List[Tuple[str, str, int]]) -> str:
+    """全本合集：书名 + 简介 + 各章（多章时带章题）+ 全文完。"""
+    parts = [
+        f'<p style="text-align: center; font-size: 24px; font-weight: bold; color: #1a1a1a; '
+        f'margin: 0 0 1.6em; line-height: 1.5;">{html.escape(book)}</p>',
+    ]
+    desc_html = _wx_desc_html(description)
+    if desc_html:
+        parts.append(desc_html)
+    multi = len(chapters) > 1
+    for ch_title, text, _wc in chapters:
+        if multi:
+            parts.append(
+                f'<p style="text-align: center; font-size: 18px; font-weight: bold; color: #1a1a1a; '
+                f'margin: 2.4em 0 1.2em; line-height: 1.5;">{html.escape(ch_title)}</p>')
+        parts.extend(_wx_para_html(p) for p in _md_to_paragraphs(text))
+    parts.append('<p style="text-align: center; font-size: 14px; color: #999999; '
+                 'letter-spacing: 2px; margin: 2.4em 0 0;">（全文完）</p>')
+    return "\n".join(parts)
+
+
+def _wx_guide(book: str, issues: List[Tuple[int, str, str, int]],
+              is_short: bool, total_words: int) -> str:
+    """生成《发布指南》：产出清单 + 发布步骤 + 平台规则 + 风险提示。"""
+    lines = [f"# 《{book}》公众号发布指南", ""]
+    if is_short:
+        lines += [f"> 单篇作品（约 {total_words} 字），直接按「图文消息」发布整篇即可。", ""]
+    else:
+        lines += [
+            f"> 全书约 {total_words} 字，按 {len(issues)} 期连载 + 全本合集导出；每期 1-3 千字，粘贴即用。", ""]
+
+    lines += ["## 一、产出清单", ""]
+    if is_short:
+        lines += [f"- `发布稿-{_wx_safe_name(book)}.html`：单篇正文（浏览器打开→全选复制→粘贴）", ""]
+    else:
+        lines += ["| 期数 | 文件 | 建议标题 | 字数 |", "| --- | --- | --- | --- |"]
+        for no, ch_title, fname, wc in issues:
+            lines.append(f"| {no} | `{fname}` | 《{book}》连载（{_wx_cn_num(no)}）· {ch_title} | {wc} |")
+        lines += [
+            "",
+            "- `合集-全本单篇.html`：全书一篇（建议完结后作为「一次性读完」长文发布）",
+        ]
+    lines += [
+        "- `发布指南.md`：本文件",
+        "",
+        "## 二、发布步骤（每期相同）",
+        "",
+        "1. 登录微信公众平台 → 首页「新的创作」→「图文消息」；",
+        "2. 用浏览器打开对应 HTML 文件，`Ctrl+A` 全选 → `Ctrl+C` 复制（行内样式会一起带走）；",
+        "3. 粘贴进正文编辑器，检查排版：16px 字号、1.9 行距、首行缩进 2 字；",
+        "4. 标题：抄上表「建议标题」；作者栏最多 8 个字（可填笔名）；",
+        "5. 封面上传 900×500 图片；摘要可留空，系统自动抓正文前 54 字；",
+        "6. 勾选「原创声明」（正文 ≥300 字即可声明，平台会自动做原创度比对）；",
+        "7. **务必勾选「AI 生成（合成）内容」声明**——2025-09-01 起施行的《人工智能生成合成内容标识办法》与微信平台公告的硬性要求，不得隐匿；",
+        "8. 先「预览」发给自己，手机端确认排版，再群发。",
+        "",
+        "## 三、发布节奏建议",
+        "",
+        "- 订阅号每天可群发 1 次，一次群发最多 8 条图文；",
+        "- 稳妥：每天 1 期，连载完；求快：每次群发 3-4 期，几天发完；",
+        "- 合集单篇留到完结后发，或作为置顶「合集版」。",
+        "",
+        "## 四、平台规则要点（已核实）",
+        "",
+        "- 单篇正文上限：官方客服口径 5 万字（本书每期远低于上限；若编辑器保存时提示超限，把合集拆成上下篇）；",
+        "- 原创声明：对全部公众号开放，无需申请；要求独立创作、正文 ≥300 字、原创度过检测；",
+        "- AI 声明：微信要求 AI 生成合成内容发布时主动声明，平台会加显式/隐式标识，不得删除、隐匿；",
+        "- 群发后仅可修改 5 个字：务必先预览、后群发。",
+        "",
+        "## 五、风险提示",
+        "",
+        "- 涉及主人公自杀情节的章节（如第 13 期）：本书为白描、无细节，仍可能被机审提示或限流；如遇审核问题可申诉，或调整发布顺序；",
+        "- 本仓库为公开仓库、全文已托管 GitHub：微信原创比对主要发生在微信生态与全网公开内容之间，GitHub 被抓取比对的概率较低；若原创声明被拒，可申诉或改为不声明原创直接发布；",
+        "- 建议文末附一句「本作品含 AI 辅助创作」文字说明（与平台声明互为补充）。",
+    ]
+    return "\n".join(lines) + "\n"
+
+
+def export_wechat(proj: Any, strip: bool = True) -> Dict[str, str]:
+    """导出微信公众号发布稿：dist_wechat/（连载 HTML + 全本合集 + 发布指南）。
+
+    HTML 用行内样式排版，浏览器打开后全选复制、粘贴进公众号编辑器即保留格式；
+    strip=True（默认）时剥离 W/C 设定编号锚点，与出版净稿一致。
+    """
+    cfg = proj.config()
+    title = cfg.get("title", proj.name)
+    is_short = str(cfg.get("work_type", "novel")).lower() == "short"
+
+    # 简介：优先 00-简介.md（与 assemble 成书一致），退回创作概念「故事前提展开」，再退 premise
+    description = ""
+    syn_path = proj.path("00-简介.md")
+    if os.path.exists(syn_path):
+        with open(syn_path, encoding="utf-8") as f:
+            description = f.read().strip()
+    if not description:
+        concept_raw = ""
+        concept_path = proj.f_concept()
+        if os.path.exists(concept_path):
+            with open(concept_path, encoding="utf-8") as f:
+                concept_raw = f.read()
+        m_intro = re.search(r"## 故事前提展开[^\n]*\n([\s\S]*?)(?=\n##|$)", concept_raw)
+        description = m_intro.group(1).strip() if m_intro else (cfg.get("premise") or "")
+
+    chapter_files = proj.list_chapters()
+    if not chapter_files:
+        raise RuntimeError("项目尚无章节文件，请先执行 draft 阶段生成正文。")
+
+    valid_ids = _defined_anchor_ids(proj) if strip else None
+    daily_titles = _defined_daily_titles(proj) if strip else None
+    if strip:
+        description = strip_anchors(description, valid_ids, daily_titles)
+
+    chapters: List[Tuple[str, str, int]] = []
+    for path in chapter_files:
+        with open(path, encoding="utf-8") as f:
+            text = f.read()
+        if is_short:
+            text = re.sub(r"^#\s*第\s*\d+\s*章[^\n]*\n+", "", text, count=1)
+        # 先取标题：锚点剥离的残渣清理会移除汉字间空格，不能连标题里的空格一起吃
+        no = re.search(r"chapter_(\d+)", os.path.basename(path))
+        def_title = f"第 {int(no.group(1))} 章" if no else os.path.basename(path)
+        ch_title = title if is_short else _extract_title(text, def_title)
+        if strip:
+            text = strip_anchors(text, valid_ids, daily_titles)
+        chapters.append((ch_title, text, _word_count(text)))
+
+    total_words = sum(wc for _, _, wc in chapters)
+    out_dir = proj.path("dist_wechat")
+    os.makedirs(out_dir, exist_ok=True)
+    results: Dict[str, str] = {}
+
+    issues: List[Tuple[int, str, str, int]] = []
+    if is_short:
+        out_file = os.path.join(out_dir, f"发布稿-{_wx_safe_name(title)}.html")
+        body = _wx_collection_body(title, description, chapters)
+        with open(out_file, "w", encoding="utf-8") as f:
+            f.write(_wx_doc(title, body))
+        results["wechat"] = out_file
+    else:
+        series_dir = os.path.join(out_dir, "连载")
+        os.makedirs(series_dir, exist_ok=True)
+        n = len(chapters)
+        for i, (ch_title, text, wc) in enumerate(chapters, 1):
+            fname = f"第{i:02d}期-{_wx_safe_name(ch_title)}.html"
+            out_file = os.path.join(series_dir, fname)
+            body = _wx_issue_body(title, i, n, ch_title, text,
+                                  _wx_desc_html(description) if i == 1 else "", i == n)
+            with open(out_file, "w", encoding="utf-8") as f:
+                f.write(_wx_doc(f"《{title}》连载（{_wx_cn_num(i)}）· {ch_title}", body))
+            issues.append((i, ch_title, fname, wc))
+        collection = os.path.join(out_dir, "合集-全本单篇.html")
+        with open(collection, "w", encoding="utf-8") as f:
+            f.write(_wx_doc(title, _wx_collection_body(title, description, chapters)))
+        results["wechat"] = out_dir
+
+    guide_path = os.path.join(out_dir, "发布指南.md")
+    with open(guide_path, "w", encoding="utf-8") as f:
+        f.write(_wx_guide(title, issues, is_short, total_words))
+    results["wechat_guide"] = guide_path
+    return results
+
+
 def export_all(
     proj: Any,
     formats: Optional[Sequence[str]] = None,
@@ -934,11 +1172,12 @@ def export_all(
             text = f.read()
         if is_short:
             text = re.sub(r"^#\s*第\s*\d+\s*章[^\n]*\n+", "", text, count=1)
-        if strip:
-            text = strip_anchors(text, valid_ids, daily_titles)
+        # 先取标题：锚点剥离的残渣清理会移除汉字间空格，不能连标题里的空格一起吃
         no = re.search(r"chapter_(\d+)", os.path.basename(path))
         def_title = f"第 {int(no.group(1))} 章" if no else os.path.basename(path)
         ch_title = title if is_short else _extract_title(text, def_title)
+        if strip:
+            text = strip_anchors(text, valid_ids, daily_titles)
         chapters.append((ch_title, text))
 
     dist_dir = proj.path("dist_en" if is_en else "dist")

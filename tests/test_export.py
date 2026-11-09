@@ -75,6 +75,65 @@ class TestExport(unittest.TestCase):
         self.assertIn("\u3000\u3000他在冰冷的液氮舱中苏醒。", content)
 
 
+    def test_export_wechat_serial(self):
+        # 公众号导出：连载 HTML + 全本合集 + 发布指南；锚点剥离、首期带简介、续尾标记正确
+        root = self.temp_dir.name
+        os.makedirs(os.path.join(root, "chapters"), exist_ok=True)
+        with open(os.path.join(root, "00-简介.md"), "w", encoding="utf-8") as f:
+            f.write("一个测试简介。\n\n第二段（W1）。\n")
+        with open(os.path.join(root, "01-世界观.md"), "w", encoding="utf-8") as f:
+            f.write("| **W1** | 评分换算 |\n")
+        for i, t in enumerate([
+                "# 第一章 播种\n\n他种下麦子（W1）。\n",
+                "# 第二章 返青\n\n麦子绿了（W1）。\n"], 1):
+            with open(os.path.join(root, "chapters", f"chapter_{i:03d}.md"), "w",
+                      encoding="utf-8") as f:
+                f.write(t)
+
+        class _P:
+            name = "wxproj"
+
+            def config(self):
+                return {"title": "冬小麦测试", "premise": "前提", "work_type": "novel"}
+
+            def f_concept(self):
+                return os.path.join(root, "00-创作概念.md")
+
+            def f_world(self):
+                return os.path.join(root, "01-世界观.md")
+
+            def f_characters(self):
+                return os.path.join(root, "02-角色.md")
+
+            def list_chapters(self):
+                return [os.path.join(root, "chapters", "chapter_001.md"),
+                        os.path.join(root, "chapters", "chapter_002.md")]
+
+            def path(self, *p):
+                return os.path.join(root, *p)
+
+        res = export.export_wechat(_P())
+        out_dir = res["wechat"]
+        self.assertTrue(os.path.isdir(out_dir))
+        series = os.path.join(out_dir, "连载")
+        names = sorted(os.listdir(series))
+        self.assertEqual(len(names), 2)
+        with open(os.path.join(series, names[0]), encoding="utf-8") as f:
+            first = f.read()
+        with open(os.path.join(series, names[1]), encoding="utf-8") as f:
+            last = f.read()
+        self.assertIn("未完待续", first)
+        self.assertIn("全文完", last)
+        self.assertIn("第一章 播种", first)       # 标题空格不被锚点清理吃掉
+        self.assertTrue(any("第一章-播种" in n for n in names))
+        self.assertNotIn("W1", first)            # 锚点（含简介）剥离
+        self.assertIn("内容简介", first)          # 首期带简介块
+        self.assertTrue(os.path.exists(os.path.join(out_dir, "合集-全本单篇.html")))
+        with open(res["wechat_guide"], encoding="utf-8") as f:
+            guide = f.read()
+        self.assertIn("原创声明", guide)
+        self.assertIn("AI", guide)
+
     def test_strip_anchors(self):
         src = (
             "误报率不得超过 0.8%（W6），根据 W4，档案馆年均输出 1.2 kW。\n\n"

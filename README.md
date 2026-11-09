@@ -26,6 +26,7 @@
   - **EPUB 3.0**：符合 IDPF 标准（未压缩 mimetype、NCX/Nav 目录、扉页与中文排版 CSS，可直推 Apple Books、微信读书、Kindle 等）；
   - **HTML 沉浸式离线阅读器**：单文件离线网页，亮暗主题切换、字号缩放、侧栏目录与阅读进度；
   - **规范排版 TXT**：全角段首缩进与标准分隔。
+  - **微信公众号发布稿（`--format wechat`）**：行内样式排版、粘贴即用的连载 HTML + 全本合集 + 发布指南（原创声明、AI 声明、发布节奏），产物落 `dist_wechat/`。
   - 导出自动剥离审校锚点（W/C 编号、日常细节清单、条目标题标签）产出**出版净稿**，章节与成书保留标记供审校与 `audit` 溯源。
 - 🌏 **双语发行（`translate`）**：先生成中英术语表（人名/地名/机构/称谓统一），再逐章译为出版级英文；`export --lang en` 输出英文版三格式。
 - 🚀 **一键发行（`release`）**：打包 ASCII 附件（GitHub 资产名不支持中文）、自动生成双语发行说明、创建/更新 GitHub Release，版本号自动递增。
@@ -200,6 +201,7 @@ python pipeline/run.py lint --all --write       # 全库总览
 python pipeline/run.py export 长夜将尽 --format all     # epub + html + txt
 python pipeline/run.py export 长夜将尽 --format epub
 python pipeline/run.py export 长夜将尽 --keep-anchors   # 保留审校锚点（默认剥离为净稿）
+python pipeline/run.py export 长夜将尽 --format wechat  # 公众号发布稿（dist_wechat/：连载 HTML + 全本合集 + 发布指南）
 ```
 
 ### 双语发行（`translate` + `export --lang en`）

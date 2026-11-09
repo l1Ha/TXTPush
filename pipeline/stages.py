@@ -1083,6 +1083,14 @@ def stage_assemble(proj: Project, cfg: Dict[str, Any], api: Optional[Dict[str, A
     except Exception as e:
         export_msg = f"（电子书导出提示: {e}）"
 
+    # 已启用公众号导出的项目（存在 dist_wechat/），随成书一并刷新连载稿
+    if os.path.isdir(proj.path("dist_wechat")):
+        try:
+            export.export_wechat(proj)
+            export_msg += "（含公众号稿 dist_wechat/）"
+        except Exception as e:
+            export_msg += f"（公众号稿刷新提示: {e}）"
+
     # 全书字数 85% 闸门告警
     target = len(files) * int(cfg.get("words_per_chapter", 3000))
     warn = ""
