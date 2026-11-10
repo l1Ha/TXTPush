@@ -1,0 +1,31 @@
+{
+  "title": "自愿放弃",
+  "genre": "都市现实",
+  "keywords": [
+    "临河县",
+    "豫南",
+    "县城",
+    "饭馆",
+    "社保",
+    "补缴",
+    "自愿放弃",
+    "滞纳金",
+    "劳动维权",
+    "人情债"
+  ],
+  "premise": "一个县城饭馆的帮厨干了十一年，没缴过一天社保，手里攥着自己签的自愿放弃；新规之下她决定补缴，二十九万八的账，把对她有恩的老板和她的后半生一起放上了秤。",
+  "target_chapters": 1,
+  "words_per_chapter": 5000,
+  "pov": "第三人称有限",
+  "tone": "平静、克制、白描；短句；让数字和单据说话；不煽情、不点题",
+  "audience": "大众读者",
+  "extra": "",
+  "asset_prefix": "ZiYuanFangQi",
+  "chapters_mode": "fixed",
+  "min_chapters": 5,
+  "max_chapters": 12,
+  "work_type": "short",
+  "kb_modules": [
+    "09-短篇写作"
+  ]
+}
