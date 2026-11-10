@@ -1,0 +1,31 @@
+{
+  "title": "两个钟头",
+  "genre": "都市现实",
+  "keywords": [
+    "北江市",
+    "松花江",
+    "老龄",
+    "照护者",
+    "替班",
+    "喘息",
+    "夫妻",
+    "澡堂",
+    "橘子",
+    "大众"
+  ],
+  "premise": "她照顾瘫痪的老伴八年，没出过远门、没睡过整觉；社区推出替班服务，她第一次把老伴交出去两个钟头。她洗了八年来的第一个澡，回来时，老伴给她留了半个橘子。",
+  "target_chapters": 1,
+  "words_per_chapter": 5000,
+  "pov": "第三人称有限",
+  "tone": "平静、克制、白描；短句；细节说话；不煽情、不点题",
+  "audience": "大众读者",
+  "extra": "",
+  "asset_prefix": "LiangGeZhongTou",
+  "chapters_mode": "fixed",
+  "min_chapters": 5,
+  "max_chapters": 12,
+  "work_type": "short",
+  "kb_modules": [
+    "09-短篇写作"
+  ]
+}
