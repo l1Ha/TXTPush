@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>漏粉 - TxtPush 在线阅读</title>
+<style>
+:root {
+    --bg-primary: #f8fafc;
+    --bg-card: #ffffff;
+    --text-primary: #1e293b;
+    --text-secondary: #64748b;
+    --border-color: #e2e8f0;
+    --accent: #2563eb;
+    --accent-hover: #1d4ed8;
+    --sidebar-bg: #f1f5f9;
+}
+[data-theme="dark"] {
+    --bg-primary: #0f172a;
+    --bg-card: #1e293b;
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --border-color: #334155;
+    --accent: #38bdf8;
+    --accent-hover: #0ea5e9;
+    --sidebar-bg: #111827;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.85;
+    transition: background-color 0.2s, color 0.2s;
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+}
+#sidebar {
+    width: 320px;
+    background: var(--sidebar-bg);
+    border-right: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    flex-shrink: 0;
+}
+.sidebar-header {
+    padding: 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+.sidebar-header h2 {
+    font-size: 1.15em;
+    font-weight: 700;
+    margin-bottom: 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.sidebar-meta {
+    font-size: 0.85em;
+    color: var(--text-secondary);
+}
+.chapter-list {
+    overflow-y: auto;
+    flex: 1;
+    list-style: none;
+}
+.chapter-item {
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--border-color);
+    cursor: pointer;
+    font-size: 0.95em;
+    transition: background 0.15s;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.chapter-item:hover {
+    background: rgba(0,0,0,0.04);
+}
+.chapter-item.active {
+    background: var(--accent);
+    color: #ffffff;
+    font-weight: 600;
+}
+.chapter-item .ch-words {
+    font-size: 0.8em;
+    opacity: 0.75;
+}
+#main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+.topbar {
+    padding: 12px 24px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--bg-card);
+}
+.controls button {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 6px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.88em;
+    margin-left: 8px;
+    transition: 0.15s;
+}
+.controls button:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+#content-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: 40px 10%;
+    display: flex;
+    justify-content: center;
+}
+.content-wrapper {
+    max-width: 780px;
+    width: 100%;
+}
+.article-header {
+    text-align: center;
+    margin-bottom: 36px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+.article-header h1 {
+    font-size: 1.85em;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+.article-meta {
+    font-size: 0.9em;
+    color: var(--text-secondary);
+}
+.article-body p {
+    text-indent: 2em;
+    margin-bottom: 1.4em;
+    font-size: 1.1em;
+    text-align: justify;
+}
+.intro-box {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-left: 5px solid var(--accent);
+    padding: 24px;
+    border-radius: 8px;
+    margin-bottom: 40px;
+}
+.nav-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 50px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-color);
+}
+.nav-btn {
+    padding: 10px 20px;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    background: var(--bg-card);
+    color: var(--text-primary);
+    cursor: pointer;
+    font-size: 0.95em;
+}
+.nav-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+@media (max-width: 768px) {
+    body { flex-direction: column; }
+    #sidebar { width: 100%; height: 200px; }
+    #content-container { padding: 20px 5%; }
+}
+</style>
+</head>
+<body>
+<div id="sidebar">
+    <div class="sidebar-header">
+        <h2 title="漏粉">漏粉</h2>
+        <div class="sidebar-meta">作者：TxtPush AI Writer · 1 章 / 4279 字</div>
+    </div>
+    <ul class="chapter-list" id="chapterList"></ul>
+</div>
+<div id="main">
+    <div class="topbar">
+        <span id="currentChLabel">扉页与作品简介</span>
+        <div class="controls">
+            <button onclick="changeFontSize(-1)">A-</button>
+            <button onclick="changeFontSize(1)">A+</button>
+            <button onclick="toggleTheme()" id="themeBtn">🌓 切换暗色</button>
+        </div>
+    </div>
+    <div id="content-container">
+        <div class="content-wrapper" id="articleWrapper"></div>
+    </div>
+</div>
+
+<script>
+const book = {"title": "漏粉", "author": "TxtPush AI Writer", "description": "六十一岁的老漏粉匠自学网购，一口气买了十五吨红薯。半个月后的一个冷天，他站上灶台，把荒了十几年的手艺漏进滚水里；粉条还没做完，已经被订空了。", "total_words": 4279, "chapters": [{"index": 1, "title": "漏粉", "words": 4279, "paragraphs": ["立冬一过，集上的粉条就摆出来了。", "刘德顺在摊子前站了一会儿。摊主是个年轻人，粉条扎成一捆一捆，白得发亮。有人问：筋道不？年轻人说：可筋道，机器压的，好煮。", "他捏起一捆，在手里折了折，没断。他放下，走了。", "牌子上写着三块八一斤。年轻人还在后头招呼：又筋道又便宜。他没接话。三块八，他咂摸了一下这个数，走了。", "机器粉条煮得住，炖不住。炖上一会儿，一锅菜就成了糨糊。这几年村里的席，烩菜里的粉条，他都嚼不烂。", "他今年六十一。二十来岁那会儿上的手。队里有粉坊，师傅姓郝，一个瓢端得稳、拍得匀。他跟着学和面、和芡，学了三年，上了灶。郝师傅教他端瓢：瓢要举平，手要有心数，一拍一松，一拍一松。他回家找个瓢装上沙土，一瓢沙，从头漏到尾，粗细一样，练了半冬天。漏粉挑天，数九寒天的晴日子，灶垒在院里，大锅一架，热汽一冲，人立在当中，像站在云彩里。他一站就是一晌，胳膊酸得夜里端不住碗。可那口粉条香，值。", "后来粉坊散了。人都出去打工，谁还漏粉。他那套家什没舍得扔：大缸三口，吊浆布一块，漏瓢一个，粉杆一捆。都撂在柴棚里，一撂十几年。", "前几天，他去县城闺女家吃饭。烩菜端上来，他夹了一筷子粉条，嚼了嚼，放下了。", "闺女问：咋了？", "他说：这也叫粉条。", "外孙在旁边说：姥爷，这是超市买的，可好吃了。", "他没吭声。", "回家的路上，他坐在班车上，一路没说话。进了门，他跟春枝说：我漏一回。", "春枝正蹲在灶前搓玉米，头也没抬：漏啥？你那套家什，都烂棚里了。", "他说：我刚看了，瓢还在。", "柴棚里落了厚灰。他把漏瓢翻出来，瓢底四十八个眼儿，全锈住了。他拿个钉子，坐在门槛上，一个眼儿一个眼儿地敲。春枝在屋里说：你敲它弄啥？", "他说：通通。", "敲偏的，他扶正了接着敲。天黑透了，才敲完。第二天，他把瓢擦干净，挂在了灶屋的墙上，一抬手就够着。", "红薯得先备。他到集上问，贩子说，今年薯少，价顶到七毛，量大还得等。他站在摊前算账：七毛一斤，三万斤，两万一，不合算。", "晚上，孙女彤彤在他炕上写作业。他戴上老花镜，问：彤彤，网上有卖红薯的没有？", "有啊。彤彤把笔一放：产地直发的，可便宜了，直播间里现挖。", "他凑过去看。屏幕里，一锹下去，红薯滚出来，带着土。他看了半宿。", "第二天，他让彤彤把步骤写下来。彤彤拿了一张旧挂历，翻到背面，用红笔写：", "一，点这个车车。 二，找客服问价。 三，写清楚地址电话。", "他把挂历贴在灶屋的墙上，一天看三遍。", "学是自个儿学的。没人教。他学会了三样：搜、问、买。就这三样，用了一个星期。有一回他把图标挨个点开，下了八个用不着的 App；有一回点进短视频，一看俩钟头，春枝说他是中邪了。他说：我看薯。头一单，他想试试水深水浅，手一点，点成了红薯干。寄来二十斤，甜。孙女吃了一星期。春枝说：你这是买薯还是买零嘴？", "他说：试水。", "有一晚，他点进一个直播间。里头的人一口一个家人，叫他领鸡蛋。他退出来了。春枝问：你咋不领？", "他说：我又不是他家人。", "正经下那一单，是三天以后。他加上了客服的微信——彤彤帮着加的。谈价，谈运费，谈定金。那头换了一个人，又换回来，反复问：大爷，您要多少？", "他说：三万斤。", "那头半天没回。过了会儿问：您是说，十五吨？", "他说：嗯。", "人家说：大爷，您别看错了，这是大货。", "他说：我没看错，你也没报错。五毛一斤，先付两千定金，货到结清，就中。", "那头说：大爷您真逗。", "他说：我不逗，我算过账。", "付款那天，他把密码写在手心上，看一眼，点一下，看一眼，点一下。彤彤在旁边绷着，想笑又不敢笑。", "第三天下午，三辆大车进了村。头一辆是前四后八，后头两辆跟着，轧着村道上的土，像一串火车。车斗支起来，红薯哗哗往下淌，在路口堆成一个土红色的小山。", "卸了半个下午。司机跳下来，说：大爷，您这量，是开粉坊啊。", "他说：以前开过。", "村里人围拢过来。有人数了半天，说：乖乖，这得多少斤？", "他说：三万斤。", "春枝从人堆里挤进来，围着薯堆转了两圈，跺脚：三万斤！你喂猪啊？喂到过年也吃不完！", "他说：做粉条。", "晚上，春枝数薯堆数不清，索性不数了，进屋翻出三床旧被，说苫上，别冻了。", "他说：冻不了，它经冻。", "春枝说：它经冻，我经不住。", "被子还是苫上了。", "闺女刘霞举着手机拍。她平时拍娃、拍食堂的大锅菜，那天晚上，视频火了。", "第二天，他的手机就成了村里的热线。有问红薯在哪买的，有问粉条卖不卖的。", "他说：还没做呢。", "人家说：做出来，先给我留五十斤。", "刘霞看着他一上午接了一堆电话，跟人说起来，一句话：没想到我爹胆子这么大。", "他把电话搁下，蹲到薯堆跟前，掰开一个，看瓤。白的。", "他说：中。", "打粉得拉镇上。镇上有家打浆的，铁机器，一斗一斗往里喂，浆出来像奶。他排了两天两夜的队。排队的都是附近村的，有拉一车的，有拉半车的；就他一个人拉三轮，来回跑了四趟。夜里他和春枝轮着看车，机器底下搁个塑料桶，接甩出来的浆，一桶一桶往三轮上码。", "浆到家，进大缸。吊浆布吊起来，过罗，过两遍。缸里搁一天一夜，沉下去一层白，上头一层清水。他撇水，添水，再沉。第二遍沉出来的芡贴着缸底，起出来是一砣一砣的，掐一把，沙沙响。第三遍水，清得能看见缸底的芡。他趴在缸沿上看，春枝说他像个看井的。", "晒芡看天。背风向阳的墙根支上竹匾，芡砣掰碎摊开，白花花一片。头几天天好，他一天翻几遍，像当年翻场上的麦子。", "第七天的晚上，天气预报说有雨。他半夜起来看天，西边真有云。他喊春枝，两口子摸黑把竹匾一匾一匾端进屋，端到后半夜。雨到天亮也没落下来。", "春枝拍着身上的灰说：白折腾。", "他说：不白。老天爷干活，咱不能跟它顶。", "老海来串门。老海是当年的老伙计，隔墙住。他站在墙根看了会儿粉砣，伸手拿一个掂了掂，说：这芡，白。", "刘德顺说：你手洗了没有？", "老海笑了，把手在裤腿上蹭了蹭。", "老海问：你这把年纪，图啥？", "刘德顺说：图过年村里的大锅菜。", "那半个月，他天天看天。别人看天看雨、看冷暖，他看天，是看上冻。不上冻，粉条漏出来挂不住，风一吹就断。", "进了腊月，一场北风下来。那天早上，他起来看院里那盆水，冻得邦邦硬。", "他跟春枝说：改天漏。", "春枝问：改哪天？", "他说：就是今天。", "院子扫得干干净净。灶是新垒的，土坯加砖。大锅架上，锅底烧头天备好的杨木劈柴，火旺，不炸。家伙什都摆开：缸两口，一口和面，一口温水；凉水盆三口；粉杆一捆，泡在清水里——杆湿，粉条才不粘。漏瓢用布擦了又擦，四十八个眼儿，一个一个透亮。", "来帮忙的：老海；儿子刘军从县城回来了——进院的时候嘴上说着「咱家现在谁还吃这个」，手却先把大缸刷了三遍。闺女烧火，春枝管水。", "头天晚上，他把灶膛试烧了一回。火道顺不顺，一烧就知道。火光从灶门里爬出来，照得半院子红。", "和面是力气活，也是眼力活。先打芡：一小瓢干芡，温水调开，再浇滚水，一边浇一边搅。眼看它从白的变成透明的，拉起来一条线，挂住筷子。芡打好，倒进大缸，加干芡，加水，加人。他、老海、刘军，三个男人围着缸转，拿杠子搅。搅到面发亮、不沾手，揪一团，能拉出丝。", "他揪了一小团，从拳眼里往下垂，试着往锅里滴了一滴。成条，不断。", "他说：中。", "上灶了。灶台跟前垫两块砖。他爬上去。六十一年的人，站上灶台，脚跟一沉，稳住了。", "漏瓢举在开水锅上头，一尺来高。老海在底下往瓢里续面。续面有讲究：一团一团，不能断，也不能压。一拍一续，对上了，就顺了。", "他开拍。", "拍一下，瓢里的面从底下几十个眼儿里丝丝缕缕地出去，落进滚水里。粉条落下去沉一下，几秒钟，浮起来，亮晶晶的，透琥珀色。锅底一个翻花，刘霞在灶下添柴，火舌舔着锅底。", "头两瓢，手有点生。粉条一根粗一根细。他停一下，把瓢举高一寸。第三瓢下来，匀了。", "他拍瓢的时候不说话。嘭，嘭，嘭，跟剁馅一样，又比剁馅匀。这声音一出，院子里的人都静了一下。", "刘军蹲在缸边，看他爹的手。那手上，虎口一块老茧，手背上一片烫出来的斑。他看了半天，才把眼挪开。", "头一锅粉条出锅。长筷一挑，进冷水盆，再进第二盆，捞出来，一绺一绺盘到粉杆上。春枝掐了一截嫩的，小碗装，浇上蒜汁。老海先尝，啧一声，没说话，又夹一筷子。", "刘霞说：我小时候，就等这一口。", "他说：吃你的，别看锅。", "一个半时辰，大缸见底。他胳膊抖，腿也抖，从砖上下来，身子晃了一下，扶锅台站住。刘军过去要架他，他把手拨开：没事。", "春枝把毛巾搭在他肩上，说：老骨头了。", "他说：中用。", "一竿一竿的粉条挂上院子里的架子，密密的一院，风一过，齐刷刷地摆。", "夜里零下八度。他起来了两回，出去看。粉条冻上了，一根是一根，硬得发亮。", "春枝在被窝里说：外面冷，你出去看啥。", "他说：看看。", "第二天一早，敲冰。", "木棍往粉条上轻轻一敲，哗啦啦，冰碴子往下掉，跟下雹子一样。老海在墙那头听见，喊：老刘，你这是打仗啊！", "他喊回去：拆冰！", "化过冻再晒一天，出太阳，收。收下来的粉条通体干硬，一根折三折，不断。", "卖粉条的事，刘霞说，你得自己发一条朋友圈。他说他不会。刘霞说教你。他拿过手机，琢磨了半天，打出去四个字：", "出粉条了。", "下头配了一张照片，就是他夜里拍的，一院子的粉条。", "老主顾先来。本村的、邻村的，有人拎着鸡蛋来换两斤，有人攥着一百块钱来买十斤。价定得实：本村十块，外村十二。头一天，卖出去三百多斤。", "打电话要五十斤的是邻村老王，骑着电动三轮来了，说：说好了的，五十斤。秤好，装袋，他多抓一把塞进去：添头，不算钱。", "城里那个老太太，是让儿子开着车来的。她说她嫁进城里四十年，就惦记这一口。她不挑，抓一把闻了闻，说：就是这个味。", "她买了二十斤。付钱的时候问：明年还做不？", "他说：看天。", "她说：那我就等天。", "也有人不是来买粉条的。来了就掏出手机，站在院子里拍，还要跟他合影。他不习惯，手在围裙上蹭了又蹭，站直了，笑一笑。", "有人劝他：大爷，你火了，开个直播，带货。", "他说：火啥？灶火就行。", "账是春枝算的。两千五百来斤粉条，卖到最后，剩一小捆，春枝说要留着自己吃。她把钱数了两遍，手指头蘸唾沫，数完了说：够给彤彤买个电脑了。", "他没接话。他把那小捆粉条，挂在了灶屋的梁上。", "村里的干部来了一趟，看了看大锅，说：大爷，注意防火。走了。", "过了两天又来一个，说您这算老手艺，镇上要是有展示活动，请您去。", "他说：啥展示不展示的，漏一锅算一锅。", "下雪那天，彤彤捧着手机过来：爷，网上有人问，明年还做不做。", "他让彤彤打字：做。", "想了想，又说：让他们别等。粉条这东西，得等冷天。", "彤彤打完，念给他听。他点点头，说：中。", "那条四个字的朋友圈，下头攒了二百多条。有人说馋，有人说想家，有人问接不接快递。", "他让彤彤回：接。", "院子里，最后一竿粉条挂在雪里。雪不大，一层薄白落在上头，像给它们撒了一层面。刘军临回县城，跟他交代：爸，明年早点备，我请个假回来。", "他蹲在灶前，拿钉子敲漏瓢上要开的新眼儿，嘭，嘭，轻轻地。他嗯了一声，没抬头。"]}]};
+const L = {"cover_label": "扉页与作品简介", "unit": "字", "by": "作者：", "meta_sep": " | 全书约 ", "intro_title": "作品概念与梗概", "prev": "← 上一章", "next": "下一章 →", "start": "开始阅读第一章 →", "ch_prefix": "第 ", "ch_mid": " 章 | ", "theme_dark": "☀️ 亮色模式", "theme_light": "🌓 暗色模式"};
+let currentIndex = -1; // -1 = title page / synopsis
+let fontSize = 17;
+
+function renderSidebar() {
+    const list = document.getElementById("chapterList");
+    list.innerHTML = `<li class="chapter-item ${currentIndex === -1 ? 'active' : ''}" onclick="goToChapter(-1)">
+        <span>📖 ${L.cover_label}</span>
+    </li>`;
+    book.chapters.forEach((ch, idx) => {
+        const li = document.createElement("li");
+        li.className = "chapter-item" + (currentIndex === idx ? " active" : "");
+        li.innerHTML = `<span>${ch.title}</span><span class="ch-words">${ch.words}${L.unit}</span>`;
+        li.onclick = () => goToChapter(idx);
+        list.appendChild(li);
+    });
+}
+
+function renderContent() {
+    const wrapper = document.getElementById("articleWrapper");
+    const label = document.getElementById("currentChLabel");
+    if (currentIndex === -1) {
+        label.innerText = L.cover_label;
+        wrapper.innerHTML = `
+            <div class="article-header">
+                <h1>${book.title}</h1>
+                <div class="article-meta">${L.by}${book.author}${L.meta_sep}${book.total_words.toLocaleString()}${L.unit}</div>
+            </div>
+            <div class="intro-box">
+                <h3 style="margin-bottom:12px;color:var(--accent);">${L.intro_title}</h3>
+                <div style="white-space: pre-wrap; line-height:1.75;">${book.description}</div>
+            </div>
+            <div class="nav-buttons">
+                <button class="nav-btn" disabled>${L.prev}</button>
+                <button class="nav-btn" onclick="goToChapter(0)">${L.start}</button>
+            </div>
+        `;
+    } else {
+        const ch = book.chapters[currentIndex];
+        label.innerText = ch.title;
+        const pTags = ch.paragraphs.map(p => `<p style="font-size: ${fontSize}px;">${p}</p>`).join("");
+        wrapper.innerHTML = `
+            <div class="article-header">
+                <h1>${ch.title}</h1>
+                <div class="article-meta">${L.ch_prefix}${ch.index}${L.ch_mid}${ch.words}${L.unit}</div>
+            </div>
+            <div class="article-body">
+                ${pTags}
+            </div>
+            <div class="nav-buttons">
+                <button class="nav-btn" onclick="goToChapter(currentIndex - 1)">${L.prev}</button>
+                <button class="nav-btn" onclick="goToChapter(currentIndex + 1)" ${currentIndex >= book.chapters.length - 1 ? 'disabled' : ''}>${L.next}</button>
+            </div>
+        `;
+    }
+    document.getElementById("content-container").scrollTop = 0;
+}
+
+function goToChapter(idx) {
+    if (idx < -1 || idx >= book.chapters.length) return;
+    currentIndex = idx;
+    renderSidebar();
+    renderContent();
+}
+
+function toggleTheme() {
+    const current = document.documentElement.getAttribute("data-theme");
+    const next = current === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", next);
+    document.getElementById("themeBtn").innerText = next === "dark" ? L.theme_dark : L.theme_light;
+}
+
+function changeFontSize(delta) {
+    fontSize = Math.max(14, Math.min(26, fontSize + delta));
+    const paras = document.querySelectorAll(".article-body p");
+    paras.forEach(p => p.style.fontSize = fontSize + "px");
+}
+
+renderSidebar();
+renderContent();
+</script>
+</body>
+</html>

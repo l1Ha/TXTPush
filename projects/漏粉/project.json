@@ -1,0 +1,31 @@
+{
+  "title": "漏粉",
+  "genre": "都市现实",
+  "keywords": [
+    "谷熟县",
+    "豫东",
+    "红薯",
+    "粉条",
+    "漏粉",
+    "手艺",
+    "网购",
+    "老年",
+    "乡村",
+    "大众"
+  ],
+  "premise": "六十一岁的老漏粉匠自学网购，一口气买了十五吨红薯。半个月后的一个冷天，他站上灶台，把荒了十几年的手艺漏进滚水里；粉条还没做完，已经被订空了。",
+  "target_chapters": 1,
+  "words_per_chapter": 5000,
+  "pov": "第三人称有限",
+  "tone": "平静、克制、白描；短句；让手艺和数字说话；不煽情、不点题",
+  "audience": "大众读者",
+  "extra": "",
+  "asset_prefix": "LouFen",
+  "chapters_mode": "fixed",
+  "min_chapters": 5,
+  "max_chapters": 12,
+  "work_type": "short",
+  "kb_modules": [
+    "09-短篇写作"
+  ]
+}
