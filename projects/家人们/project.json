@@ -1,0 +1,31 @@
+{
+  "title": "家人们",
+  "genre": "都市现实",
+  "keywords": [
+    "平州市",
+    "养生直播",
+    "保健品",
+    "坑老",
+    "空巢",
+    "孤独",
+    "私域",
+    "听课",
+    "退款",
+    "大众"
+  ],
+  "premise": "退休司机老温每天早八点准时上课，手机里的家人们叫他温爸爸。三个月，两万八的保健品，一个比女儿还细心的销售姑娘。直到女儿翻开了那部手机。",
+  "target_chapters": 1,
+  "words_per_chapter": 5000,
+  "pov": "第三人称有限",
+  "tone": "平静、克制、白描；短句；细节说话；不煽情、不点题",
+  "audience": "大众读者",
+  "extra": "",
+  "asset_prefix": "JiaRenMen",
+  "chapters_mode": "fixed",
+  "min_chapters": 5,
+  "max_chapters": 12,
+  "work_type": "short",
+  "kb_modules": [
+    "09-短篇写作"
+  ]
+}
