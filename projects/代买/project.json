@@ -1,0 +1,31 @@
+{
+  "title": "代买",
+  "genre": "都市现实",
+  "keywords": [
+    "南浔",
+    "彩票",
+    "代买",
+    "信任",
+    "一夜暴富",
+    "委托",
+    "熟人社会",
+    "小镇",
+    "法院",
+    "大众"
+  ],
+  "premise": "老彩民严师傅让相熟的彩票店老板代买一注十一年没换的号码，中了一等奖，税后六百六十万。开奖第二天一早，老板一个人去把奖领了；同一天，三百八十多万转进了父母、岳父的账户。",
+  "target_chapters": 1,
+  "words_per_chapter": 5000,
+  "pov": "第三人称有限",
+  "tone": "平静、克制、白描；短句；让数字和物件说话；不煽情、不点题",
+  "audience": "大众读者",
+  "extra": "",
+  "asset_prefix": "DaiMai",
+  "chapters_mode": "fixed",
+  "min_chapters": 5,
+  "max_chapters": 12,
+  "work_type": "short",
+  "kb_modules": [
+    "09-短篇写作"
+  ]
+}
