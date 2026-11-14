@@ -1,0 +1,31 @@
+{
+  "title": "对门",
+  "genre": "通用",
+  "keywords": [
+    "泺城",
+    "轴承厂",
+    "老同事",
+    "照护",
+    "闲话",
+    "AA制",
+    "存款",
+    "对门",
+    "十四年",
+    "世情"
+  ],
+  "premise": "十四年前，退休的邱月琴把病得脱形的老同事宋广林接回自己家：各住一间卧室，门对门。邻居说闲话，亲戚劝她收房租。开销AA制，存款各写各的名。两扇门，夜里都留着一道缝。",
+  "target_chapters": 1,
+  "words_per_chapter": 6500,
+  "pov": "第三人称有限",
+  "tone": "平静、克制、白描；短句；不写恩爱、不写恩情，只写规矩和日常；不煽情、不点题",
+  "audience": "大众读者",
+  "extra": "",
+  "asset_prefix": "DuiMen",
+  "chapters_mode": "fixed",
+  "min_chapters": 5,
+  "max_chapters": 12,
+  "work_type": "short",
+  "kb_modules": [
+    "09-短篇写作"
+  ]
+}
