@@ -1,0 +1,30 @@
+{
+  "title": "差价",
+  "genre": "通用",
+  "keywords": [
+    "沙澧市",
+    "卡车司机",
+    "CAR-T",
+    "天价药",
+    "医保",
+    "凑钱",
+    "病友群",
+    "差价",
+    "大众"
+  ],
+  "premise": "一支CAR-T，一百二十九万。他卖了房、卖了车，把儿子从鬼门关拉回来。今年十一月，这支药进了医保，降到了三十万以下。他没敢把这个数算完。",
+  "target_chapters": 1,
+  "words_per_chapter": 5500,
+  "pov": "第三人称有限",
+  "tone": "平静、克制、白描；短句；不写哭喊，只写账目和动作；不煽情、不点题",
+  "audience": "大众读者",
+  "extra": "",
+  "asset_prefix": "ChaJia",
+  "chapters_mode": "fixed",
+  "min_chapters": 5,
+  "max_chapters": 12,
+  "work_type": "short",
+  "kb_modules": [
+    "09-短篇写作"
+  ]
+}
