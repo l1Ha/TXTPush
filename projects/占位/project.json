@@ -1,0 +1,31 @@
+{
+  "title": "占位",
+  "genre": "通用",
+  "keywords": [
+    "卫河市",
+    "河南",
+    "高三",
+    "拼豆店",
+    "纸条",
+    "五块钱",
+    "善意",
+    "互相多礼",
+    "市井",
+    "大众"
+  ],
+  "premise": "高三女孩在拼豆店等朋友，安静坐了一个多小时，没碰任何东西，临走留下五块钱和一张道歉的纸条。店主把纸条收进了收银盒：那不是钱，是两个人互相给的‘人气’。",
+  "target_chapters": 1,
+  "words_per_chapter": 6000,
+  "pov": "第三人称有限",
+  "tone": "平静、克制、白描；短句；不写感动，只写动作和纸条；不煽情、不点题",
+  "audience": "大众读者",
+  "extra": "",
+  "asset_prefix": "ZhanWei",
+  "chapters_mode": "fixed",
+  "min_chapters": 5,
+  "max_chapters": 12,
+  "work_type": "short",
+  "kb_modules": [
+    "09-短篇写作"
+  ]
+}
