@@ -10,8 +10,6 @@
 python pipeline/run.py init <项目名> --genre <题材> --keywords ... --premise ...
 ```
 
-命名约定：目录名按创建顺序编号，格式 `<序号>_<书名>`（如 `03_标注`、`15_占位`）。CLI 与所有命令均使用带前缀的完整目录名（如 `python pipeline/run.py lint 03_标注`）；新项目按顺序续编下一个序号。
-
 单个项目目录结构：
 
 ```
