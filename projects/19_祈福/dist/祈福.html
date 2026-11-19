@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>祈福 - TxtPush 在线阅读</title>
+<style>
+:root {
+    --bg-primary: #f8fafc;
+    --bg-card: #ffffff;
+    --text-primary: #1e293b;
+    --text-secondary: #64748b;
+    --border-color: #e2e8f0;
+    --accent: #2563eb;
+    --accent-hover: #1d4ed8;
+    --sidebar-bg: #f1f5f9;
+}
+[data-theme="dark"] {
+    --bg-primary: #0f172a;
+    --bg-card: #1e293b;
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --border-color: #334155;
+    --accent: #38bdf8;
+    --accent-hover: #0ea5e9;
+    --sidebar-bg: #111827;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.85;
+    transition: background-color 0.2s, color 0.2s;
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+}
+#sidebar {
+    width: 320px;
+    background: var(--sidebar-bg);
+    border-right: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    flex-shrink: 0;
+}
+.sidebar-header {
+    padding: 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+.sidebar-header h2 {
+    font-size: 1.15em;
+    font-weight: 700;
+    margin-bottom: 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.sidebar-meta {
+    font-size: 0.85em;
+    color: var(--text-secondary);
+}
+.chapter-list {
+    overflow-y: auto;
+    flex: 1;
+    list-style: none;
+}
+.chapter-item {
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--border-color);
+    cursor: pointer;
+    font-size: 0.95em;
+    transition: background 0.15s;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.chapter-item:hover {
+    background: rgba(0,0,0,0.04);
+}
+.chapter-item.active {
+    background: var(--accent);
+    color: #ffffff;
+    font-weight: 600;
+}
+.chapter-item .ch-words {
+    font-size: 0.8em;
+    opacity: 0.75;
+}
+#main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+.topbar {
+    padding: 12px 24px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--bg-card);
+}
+.controls button {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 6px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.88em;
+    margin-left: 8px;
+    transition: 0.15s;
+}
+.controls button:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+#content-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: 40px 10%;
+    display: flex;
+    justify-content: center;
+}
+.content-wrapper {
+    max-width: 780px;
+    width: 100%;
+}
+.article-header {
+    text-align: center;
+    margin-bottom: 36px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+.article-header h1 {
+    font-size: 1.85em;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+.article-meta {
+    font-size: 0.9em;
+    color: var(--text-secondary);
+}
+.article-body p {
+    text-indent: 2em;
+    margin-bottom: 1.4em;
+    font-size: 1.1em;
+    text-align: justify;
+}
+.intro-box {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-left: 5px solid var(--accent);
+    padding: 24px;
+    border-radius: 8px;
+    margin-bottom: 40px;
+}
+.nav-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 50px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-color);
+}
+.nav-btn {
+    padding: 10px 20px;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    background: var(--bg-card);
+    color: var(--text-primary);
+    cursor: pointer;
+    font-size: 0.95em;
+}
+.nav-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+@media (max-width: 768px) {
+    body { flex-direction: column; }
+    #sidebar { width: 100%; height: 200px; }
+    #content-container { padding: 20px 5%; }
+}
+</style>
+</head>
+<body>
+<div id="sidebar">
+    <div class="sidebar-header">
+        <h2 title="祈福">祈福</h2>
+        <div class="sidebar-meta">作者：TxtPush AI Writer · 1 章 / 5800 字</div>
+    </div>
+    <ul class="chapter-list" id="chapterList"></ul>
+</div>
+<div id="main">
+    <div class="topbar">
+        <span id="currentChLabel">扉页与作品简介</span>
+        <div class="controls">
+            <button onclick="changeFontSize(-1)">A-</button>
+            <button onclick="changeFontSize(1)">A+</button>
+            <button onclick="toggleTheme()" id="themeBtn">🌓 切换暗色</button>
+        </div>
+    </div>
+    <div id="content-container">
+        <div class="content-wrapper" id="articleWrapper"></div>
+    </div>
+</div>
+
+<script>
+const book = {"title": "祈福", "author": "TxtPush AI Writer", "description": "她轻信过桥要抛一枚硬币保平安。上了廊桥，桥到头，她掏出口袋里攒的四枚一角，朝机坪抛了出去。四枚硬币不到四毛，账却是一架飞机停下来的五十八分钟，和一百多个陌生人的下午。", "total_words": 5800, "chapters": [{"index": 1, "title": "祈福", "words": 5800, "paragraphs": ["滨河县城出来，有一座大桥。", "桥是一九九三年修的，水泥的，栏杆刷成蓝的，桥头有棵老槐树，树下常年坐一个卖水的。", "陈玉兰一个人住。儿子在广东，一年回来一趟。女儿在海南，一年回来三回。她在超市做理货，下午三点下班，晚上在家看电视，看一半就睡。", "修桥那一年冬天，她在桥头站了一夜。", "那年她男人开大车跑长途，一冬没回来。有天夜里下大雪，她听说车从北边过了，就去桥头等。等到天亮，车没等到。", "第三天，消息才到。", "往后每年腊月，她都去桥头站一站。回来的时候，从兜里摸出一枚硬币，扔下桥去。扔完，她觉得这一年，他还在路上。", "这话没人教过她。是她自己给自己定的。", "陈玉兰走完这座桥，总要抛一枚硬币。", "老家的说法是：过桥抛一枚，平安到头。桥有多长她不知道，她只知道走完了要有个响动，这一段路才算走完。", "她抛的都是一角的，攒在一个铁盒里。那盒子原先装月饼，盖上的图案磨得只剩一朵花。", "铁盒搁在衣柜顶上，落着灰，每年腊月她才擦一次。擦完，她坐在小板凳上一枚一枚数，数完再盖上。", "盒里攒的，多半是给别人的：给儿子攒的，给女儿攒的，给孙子攒的。轮到自己，一枚没剩。", "家里四口人，一枚一枚地攒。", "这回去海南看外孙，出发那天，她揣了四枚。", "女儿在电话里说过：妈，飞机上啥也别扔，啊？", "不扔不扔。她当时答得很快。", "她心里另有一本账：在她看来，飞机也是桥，过，也得有那个响动。", "机场很大，大得让她不敢抬头。到处是灯，到处是人，广播里的女声很稳，像在给一条船导航。", "过安检的时候，行李过机，她站在筐子边上等。女儿在视频里教过她：妈，液体别带，打火机别带。她带了两瓶自己灌的米酒，被退回来，寄存在服务台。她空着手出来，心里不踏实。", "候机厅里，女儿把外孙搂在怀里，凑到她耳边又说了一遍：妈，飞机上啥也别扔，啊？", "她说：不扔不扔。", "外孙问她：奶奶，你怕不怕飞机？", "她说：奶奶不怕。", "她把手在裤子上擦了一下。掌心全是汗。", "临上廊桥，她把一个红布袋塞进外孙的背包。袋子是她自己缝的，绳口收紧。", "她说：到了地方，奶奶给你装一枚钱。", "那红布袋是头天晚上缝的。红布是过年做被面剩的，颜色褪了些，她剪成巴掌大的一块，四边走了两道线，又用手捏了捏边，怕扎着孩子。绳口穿一根尼龙绳，打了个活结，拎起来晃一晃，能装。", "她往里试了一枚硬币，又掏出来。", "想了想，把钱揣回兜里。", "她在超市攒下的钱不多，给外孙买过一辆小车，两百多；买过一套积木，百来块。她不图别的，她想着孩子出门在外，得有个压惊的。", "上廊桥的时候，她数着步子。", "二十来米，两边是玻璃，外面是水泥地。数到四十几步，前面就是机舱门。", "廊桥上的喇叭在讲安全事项。讲到最后一句：旅客朋友，请勿将任何物品抛向舱外。", "她说：俺知道。", "她心里想的是另一桩事——她在老家过桥，也是不往桥下扔东西的。", "机舱门和廊桥之间，有一道缝。", "她停了一下。", "在她看来，这一下，是桥到头了。", "过桥的人抛硬币，是把平安留给桥。她把平安押给了自己。", "她的手伸进外套口袋。", "四枚硬币攥了一路，手心全是汗，硬币黏在掌纹里，甩不出去。她用另一只手的拇指，一枚一枚地蹭硬币的边缘，把汗蹭掉。", "第一枚抛出去的时候，她听见很轻的一声。", "第二枚，第三枚。", "第四枚有个小缺口，她多用了点力。", "四声，前后不到两秒。", "她等着那个更大的响动，像老家的桥那样。它没有来。", "小徐站在舱门口，背对着旅客。", "她是这一班的乘务员，飞了三年。", "师父是个飞了二十年的老乘务，退下来的时候留给她一句话：别抢着做决定，先把顺序做对。", "今天这班飞完，她能歇两天。本来打算去趟批发市场，给妈买床厚棉被。", "那天她数人头，数到三十七，余光里地上亮了一下。", "一小点金属。", "她弯下腰。", "第一枚卡在舱门和廊桥之间的那道缝里。第二枚在廊桥桥面上。第三枚滚远了，落在机坪的水泥地上，被风吹着打转。", "第四枚她没看见。", "训练里教过她：先看，再报告，最后处置。她按住了想关舱门的手，也按住了想立刻开口的念头。", "她按下通话器，声音比自己想的稳：廊桥这边有异物，四枚左右，一角硬币。请机务确认。", "通道里马上有人问：什么东西？我的行李掉的吗？", "一个做买卖的男人举着手机：能拍一下不？", "她说不方便，然后把流程走完：旅客先回座位，系好安全带，不要在通道里走动。", "那男人不太情愿地往回走，边走边跟旁边的人说：耽误事。他下午两点的会。", "她听见了。她没接话。", "然后她对还站在通道里的旅客说：女士们先生们，麻烦大家先回座位上，我们等一小会儿。", "有个小孩问：怎么还不飞？", "她笑了一下：飞，会飞。得等一小会儿。", "等待是从这一刻开始算的。", "广播改了三遍。", "第一遍说：地面正在进行一项检查，请各位旅客在座位上稍候。", "第二遍说：检查还在进行，请大家不要着急。", "第三遍说：抱歉让大家久等，我们争取尽快安排。", "她站在舱门口把这三句话说完，嗓子有点干。", "检查。", "她心里揣的是四枚一角硬币，广播里说的是\"一项检查\"。", "有个戴工牌的男人在通道里跟人解释，说得挺热闹：设备的事，跟设备有关，跟人无关。", "没人接他的话。", "乘务长从后面过来，问她什么情况。", "她把三枚硬币的位置报了一遍。第四枚没看见。", "乘务长说：你报四枚的时候，说的是\"四枚左右\"？", "她说是。", "乘务长说：以后说\"三枚，一枚未确认\"。差一个数，底下就得多找二十分钟。", "她记住了。", "她给老人倒水，给晕机的姑娘拿袋子，帮一个找不到登机牌的旅客查屏幕。有人给家里打电话，说今天要晚两个钟头。有人一遍一遍刷手机，想改签。", "她自己腰上那枚登机牌扣子，被一个小孩的背包挂掉了。她弯腰看了一眼，没工夫捡。", "一秒，和五十八分钟，中间隔着一个人的手心。", "等待的时候，机坪上有人在趴着找硬币。她隔着舱门看不见，只知道有这么个人，在水泥地上，一寸一寸地挪。", "举手机的那个男人又来了两趟。第二趟问：多少分钟了？", "她说：二十八。", "第三趟她没答。他自己在那儿算，算完骂了一句，坐下了。", "她心里在数：一百二。一百一十八。一百一十。", "老丁知道有硬币的时候，飞机已经停了。", "反光背心没穿利索，他一边套一边往机坪跑。手电别在腰上，铝壳的，拧不紧，得用牙咬住。", "发动机熄着火，可那个大家伙还张着嘴。进气口黑黢黢的，一圈一圈往里收。", "他们这行有句话：累不算事，那点金属才算事。", "跟老丁搭班的是小陈，二十四岁，来了不到一年。", "小陈趴在另一侧，照着地面扫一遍一遍地看：丁师傅，这儿有一片反光。", "是塑料贴纸。老丁说。", "小陈松了口气。老丁没松：塑料也怕。怕缠进去。", "小陈问：丁师傅，硬币进去会怎么样？", "老丁说：进去就出不来。那玩意儿是铁的，进了嘴里就是铁。", "小陈笑了：丁师傅你说得跟骂人似的。", "老丁没笑。他说：你到这行来，有句话得记住——发动机有脾气，你往它嘴里扔个铁疙瘩，它不跟你商量。", "航站楼三层的玻璃幕墙后面，站了一排人，往机坪这边看。看不清什么，就是看。", "老丁趴下去，手电照着水泥地，一寸一寸往进气口那边挪。", "第二枚在桥面上，唾手可得。第三枚在五十米开外，被风吹在航站楼墙根的沙土里。第四枚最难，卡在进气口外沿一个安全阀的边上，半个身子探进去，半个身子露着。", "他没敢用手抠。他找来一片薄塑料，顺着缝往里推，又不敢推狠，怕把它推到更难办的地方。", "塑料片推进去半寸，卡住了。他退出来，换个角度，再推。", "小陈举着手电，胳膊举得发酸：丁师傅，歇会儿。", "老丁说：歇会儿它不会自己出来。", "对讲机里同事问：找到了？", "他说：再等等。", "他干了三十年，见过一次吸进去的。那次是一只手套，毛线手套，吸进气道口，卡在第一级叶片上。飞机停了四十个小时。那次没人受伤。", "从那以后，他见着地上有金属就先看。", "缝里那一枚，是小陈用镊子夹出来的，边缘蹭掉一点漆。", "塑料片第三次推进去的时候，硬币在光里翻了个身，边上的缺口对着他。", "他捏住塑料片的两头，慢慢往回抽。硬币被夹着，一点一点从安全阀边上脱开，落在塑料片上。", "老丁把它倒进一个纸杯里。", "五十多分钟，四枚，一枚没少。", "四枚装进袋子，封好。小陈捧在手里，像捧着什么热的东西。", "机长来了，问：能飞了吗？", "老丁说：不能。", "机长说：还有别的？", "老丁说：还有别的没看见的。看不见的东西，才最要命。", "机长站了一会儿，转身走了。", "小陈蹲在旁边，把饭盒打开：丁师傅，饭都凉了。", "老丁看了一眼，把盒盖扣上：等会吃。", "老丁直起身子的时候，腿是麻的。他摘下手套，攥在手里，手抖得握不住手电。", "他站在那儿想：我这辈子，就毁在这种小东西上。", "派出所的桌子上落了一层薄灰。", "屋里开着空调，嗡嗡地响。靠门那面墙上贴着几张告示，一张红字：严禁在机场净空区抛掷物品。另一张是乘机常识，字小，密密麻麻。", "陈玉兰坐在塑料椅上。饮水机在小余身后，他过去接了杯水，端过来，放在她面前。", "她说：谢谢。", "两只手捧着杯子，捧了很久也没喝。", "民警小余三十来岁，把笔录纸推过去：您先别急，我一样一样跟您说。", "他说，飞机发动机转起来有很强的吸力，一枚硬币进去，轻的能把叶片打伤，重的能让发动机在半空中停车。他打开手机，找出一段视频：机务趴在机坪上找硬币。", "陈玉兰看了两遍。", "她的手指头在杯壁上抠，抠出一个白印。", "小余把手机收起来，又问：您以前坐过飞机吗？", "她说：这一回是第一回。", "小余抬起头。", "她说：以前没坐过。", "小余又问：您那四枚硬币，是打算往哪儿扔的？", "她说：俺们那儿过桥要扔。俺想着飞机也是桥。", "小余在纸上写了一行字，笔尖停住，又添了几个字。", "一路上她心里那句\"过桥抛一枚\"，到这一步才咂出味来：她扔的是四毛钱的平安，赔进去的是一百多号人的一个下午。", "她问：俺那硬币，找回来了没？", "小余说：找回来了，四枚，一枚没少，都在这儿。", "登记完，小余把四枚硬币装进一个小塑料袋，封好，在袋子上写了日期。", "他说：这是案里的东西，得留几天。到时候一样不少，给您。", "她点了点头。", "她把手里的布包打开，翻了翻。红布袋就在里头，空的，绳口收紧着，袋底一点东西没有。", "小余问：这袋子是？", "她说：给外孙装钱的。装一枚，压压惊。", "小余说：压惊有别的法子。", "她点点头，把红布袋放回包里。", "小余又说：您这个事，按规定得处理。往飞机上抛东西，扰乱公共秩序，可以拘留五天。", "她点头。这回点得很轻。", "陈玉兰说：俺哪知道这么厉害。俺们那儿都这样啊，走过桥就得有个响动。", "小余愣了一下。他说：这个事，跟您的想法没关系，跟飞机有关系。飞机上是一百多号人的命。", "她听进去了。她只是没想到，那几枚硬币能跟命挂上钩。", "小余把一张纸推过来，纸上几行字。母亲不识几个字。", "小余说：这儿按个手印。", "她按了。指头上沾了红印泥，她在裤子上擦了两下。", "小余说：拘留从明天算，五天。今天我让同事送您回去，明天早上八点，我带您过去。", "女儿是那天下午到的——她一直坐在航站楼里。", "一进门她就喊：妈！", "冲着母亲说了很多，嗓子越来越大：你不是答应我了吗？你不是说不扔了吗？你怎么能……", "说到一半，她哭了。", "后来她自己解释：她气的不只是硬币。她气的是母亲把平安系在那上头——她这几年一个人带孩子，怕的就是这个。", "屋里安静下来。空调还在嗡嗡地响。", "女儿站在桌子那头，一直没坐下。她把手插在外套兜里，看着墙上那张红字告示，看了很久。", "母亲一直低着头。两只手在膝盖上交叠，指头绞着衣角。", "派出所门口的台阶上，她站了一会儿。", "她的手伸进自己口袋。那里还有一枚硬币。出门前在楼下小卖部换的，一元的，说是到了地方给外孙装进那个红布袋里——不是说抛。", "她在心里数了数：一枚。", "她的手抬起来，又放下了。", "拘留那五天，她住在一间没有窗的屋子里。", "三米二高，一张铁床，一个马桶，一天两顿米饭，早上一回铃。", "她每天数墙上的砖。数到第三天，她不数了。", "第五天早上，小余送她到航站楼门口。", "他手里提着个塑料袋。四枚硬币，找回来那天登记完就留在了派出所，说是办案要过，今天一并还您。", "他说：您点点。", "她把塑料袋打开，一枚一枚数了一遍：四枚。", "小余在路边给她买了两个肉包子。她要掏钱，他不要。", "女儿和外孙在门口等着。外孙跑过来抱住她的腿。", "她把手伸进口袋，摸出那一枚一元，递给外孙：拿着，别扔。", "外孙攥着，问：奶奶，为啥别扔？", "她说：不为啥。揣着吧。", "海陵市的海，是当天傍晚才看见的。", "她把鞋脱了，卷起裤腿，往水里走。", "海水是温的，一层一层往脚背上爬。她走得不远，走到浪能碰到裤脚的地方，站住。", "站了很久。", "她想起小时候她娘带她下河，也是这样，卷着裤腿站在水里。水凉，脚趾头发麻。回家她娘割一把韭菜，说：吃了不生病。", "她那时候不懂。现在也不算懂。只是站在水里，脚下有东西托着，心里那点慌，淡了一点。", "外孙在岸上喊：奶奶！你鞋子要跑啦！", "她低头看，鞋已经被浪推出去两米。她没去追。", "外孙在沙上挖贝壳，挖到一个就往她手里塞：奶奶，这个给你。", "她说：好看。", "外孙又问：奶奶，你那天为啥把硬币扔了？", "她说：奶奶不知道。就知道不能扔。", "外孙不太懂，蹲下去接着挖。他从口袋里掏出那个一元硬币，塞进贝壳里：奶奶，搁里头行不行？", "她看着那个贝壳。硬币在里头，转个圈就看不见了。", "她把贝壳接过来，装进红布袋，绳子系紧。", "她想：过桥抛一枚，是许愿；在机坪上抛，是赌命；在海边捡贝壳，就只是捡贝壳。", "同一个动作，扔在不同的地方，意思不一样。", "女儿在沙滩边的遮阳伞底下坐着，剪指甲，剪得咔咔响。", "她妈说：晓啊，俺想明白一件事。", "女儿抬头。", "她说：钱是钱，规矩是规矩，命是命。俺以前分不清。", "女儿没说话，把剪下来的指甲屑吹掉。", "过了一会儿，女儿伸手把那个红布袋拿过去。", "她妈把贝壳从袋里倒出来，攥在手里，把空袋子递过去。", "女儿翻过来看：里头啥也没有。", "她说：这个我拿走了。", "她妈问：你要它干啥？", "女儿把红布袋卷成一卷，塞进自己兜里：装头发。理发店缺这玩意儿。", "她妈看着那个兜鼓起来，没说话。", "回县城前，她把贝壳装进外孙的背包，搁在最底下。", "行李超重，女儿说：妈，你给我拎一样。", "她说：不用。", "她把四个人的登机牌理了理，叠成四张，塞进上衣口袋。", "家里四口人。她还是数。可这一回，一枚也没往外扔。", "那枚一元在贝壳里，在外孙的背包最底下。", "海风从阳台窗缝里进来，把毛巾吹得动了一下。", "回程那天，廊桥还是那座廊桥，还是二十来米。", "她这次没数步子。", "手插在外套口袋里。口袋里是空的。", "她把那个空口袋摸了一遍，又摸了一遍。", "走到机舱门口，那道缝还在。", "她停了一下。", "在她看来，这一下，是桥到头了。", "她什么也没抛。", "后面有个小伙子推着行李箱上来，说：奶奶，堵着门了。", "她说：哎，哎。", "她侧身让他过去。", "舱门关上的时候，她听见\"咔\"的一声。", "飞机照样飞了。", "起飞的时候，她从舷窗往下看。机坪越来越小，那道缝看不见了。", "她摸了摸上衣口袋。四张登机牌还在。", "明天她回超市上班，下午三点下班。回城的路上要过那座大桥。", "她大概还是会停一下。", "停一下，就够了。", "你说，这世上有没有哪一样东西，是抛出去以后，不用别人接的？"]}]};
+const L = {"cover_label": "扉页与作品简介", "unit": "字", "by": "作者：", "meta_sep": " | 全书约 ", "intro_title": "作品概念与梗概", "prev": "← 上一章", "next": "下一章 →", "start": "开始阅读第一章 →", "ch_prefix": "第 ", "ch_mid": " 章 | ", "theme_dark": "☀️ 亮色模式", "theme_light": "🌓 暗色模式"};
+let currentIndex = -1; // -1 = title page / synopsis
+let fontSize = 17;
+
+function renderSidebar() {
+    const list = document.getElementById("chapterList");
+    list.innerHTML = `<li class="chapter-item ${currentIndex === -1 ? 'active' : ''}" onclick="goToChapter(-1)">
+        <span>📖 ${L.cover_label}</span>
+    </li>`;
+    book.chapters.forEach((ch, idx) => {
+        const li = document.createElement("li");
+        li.className = "chapter-item" + (currentIndex === idx ? " active" : "");
+        li.innerHTML = `<span>${ch.title}</span><span class="ch-words">${ch.words}${L.unit}</span>`;
+        li.onclick = () => goToChapter(idx);
+        list.appendChild(li);
+    });
+}
+
+function renderContent() {
+    const wrapper = document.getElementById("articleWrapper");
+    const label = document.getElementById("currentChLabel");
+    if (currentIndex === -1) {
+        label.innerText = L.cover_label;
+        wrapper.innerHTML = `
+            <div class="article-header">
+                <h1>${book.title}</h1>
+                <div class="article-meta">${L.by}${book.author}${L.meta_sep}${book.total_words.toLocaleString()}${L.unit}</div>
+            </div>
+            <div class="intro-box">
+                <h3 style="margin-bottom:12px;color:var(--accent);">${L.intro_title}</h3>
+                <div style="white-space: pre-wrap; line-height:1.75;">${book.description}</div>
+            </div>
+            <div class="nav-buttons">
+                <button class="nav-btn" disabled>${L.prev}</button>
+                <button class="nav-btn" onclick="goToChapter(0)">${L.start}</button>
+            </div>
+        `;
+    } else {
+        const ch = book.chapters[currentIndex];
+        label.innerText = ch.title;
+        const pTags = ch.paragraphs.map(p => `<p style="font-size: ${fontSize}px;">${p}</p>`).join("");
+        wrapper.innerHTML = `
+            <div class="article-header">
+                <h1>${ch.title}</h1>
+                <div class="article-meta">${L.ch_prefix}${ch.index}${L.ch_mid}${ch.words}${L.unit}</div>
+            </div>
+            <div class="article-body">
+                ${pTags}
+            </div>
+            <div class="nav-buttons">
+                <button class="nav-btn" onclick="goToChapter(currentIndex - 1)">${L.prev}</button>
+                <button class="nav-btn" onclick="goToChapter(currentIndex + 1)" ${currentIndex >= book.chapters.length - 1 ? 'disabled' : ''}>${L.next}</button>
+            </div>
+        `;
+    }
+    document.getElementById("content-container").scrollTop = 0;
+}
+
+function goToChapter(idx) {
+    if (idx < -1 || idx >= book.chapters.length) return;
+    currentIndex = idx;
+    renderSidebar();
+    renderContent();
+}
+
+function toggleTheme() {
+    const current = document.documentElement.getAttribute("data-theme");
+    const next = current === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", next);
+    document.getElementById("themeBtn").innerText = next === "dark" ? L.theme_dark : L.theme_light;
+}
+
+function changeFontSize(delta) {
+    fontSize = Math.max(14, Math.min(26, fontSize + delta));
+    const paras = document.querySelectorAll(".article-body p");
+    paras.forEach(p => p.style.fontSize = fontSize + "px");
+}
+
+renderSidebar();
+renderContent();
+</script>
+</body>
+</html>
